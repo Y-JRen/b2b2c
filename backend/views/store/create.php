@@ -11,7 +11,6 @@ $this->params['breadcrumbs'][] = ['label' => '门店管理', 'url' => ['index']]
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="store-create">
-
     <?= $this->render('_form', [
     'model' => $model,
     ]) ?>

@@ -27,13 +27,15 @@ class Cascade extends InputWidget
      * @var array
      */
     public $attributes = [];
-    
-    
+
+
     public $clientOptions = [];
-    
+
     public $cascadeData = [];
-    
-    
+
+    public $callback = '';
+
+
     public function init()
     {
         parent::init();
@@ -41,7 +43,7 @@ class Cascade extends InputWidget
             throw new InvalidConfigException('级联字段未指定');
         }
     }
-    
+
     /**
      * @return string
      */
@@ -50,7 +52,7 @@ class Cascade extends InputWidget
         $this->registerClientScript();
         $content = Html::beginTag('div', ['class' => 'hidden']);
         foreach ($this->attributes as $attribute) {
-            $content .= Html::hiddenInput(Html::getInputName($this->model, $attribute), null,['id' => $attribute]);
+            $content .= Html::hiddenInput(Html::getInputName($this->model, $attribute), $this->model->$attribute, ['id' => $attribute]);
         }
         $content .= Html::endTag('div');
         $content .=Html::beginTag('div', ['id' => 'cascade']);
@@ -62,7 +64,7 @@ class Cascade extends InputWidget
         $content .= Html::endTag('div');
         return $content;
     }
-    
+
     /**
      * Registers required script for the plugin to work as jQuery File Uploader
      */
@@ -93,5 +95,5 @@ __SCRIPT;
 
         $this->getView()->registerJs($js);
     }
-    
+
 }

@@ -95,7 +95,6 @@ use dmstr\widgets\Alert;
 
                         <div class="menu-info">
                             <h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>
-
                             <p>Execution time 5 seconds</p>
                         </div>
                     </a>
