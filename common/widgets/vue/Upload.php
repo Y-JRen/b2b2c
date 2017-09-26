@@ -31,7 +31,7 @@ class Upload extends InputWidget
      * 上传图片张数
      * @var int
      */
-    public $maxSize;
+    public $maxSize = 1;
     
     /**
      * 上传链接
@@ -68,14 +68,16 @@ class Upload extends InputWidget
         $content .= Html::endTag('div');
         $content .= Html::beginTag('div', ['id' => 'vueUpload']);
         $content .= ' <el-upload
-  class="upload"
+  class="upload-demo"
   action="'.$this->uploadUrl.'"
   name="pics"
   :on-success="handleSuccess"
   :on-remove="handleRemove"
+  :before-upload="beforeAvatarUpload"
   :file-list="fileList"
   :multiple=false
   list-type="picture">
+  <el-button size="small" type="primary">点击上传</el-button>
   <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
 </el-upload> ';
         $content .= Html::endTag('div');
@@ -94,26 +96,43 @@ class Upload extends InputWidget
         } else {
             $changeValue = '$("#'.$this->attribute.'")';
         }
+        $errorMessage = '$message';
         $js = <<<__SCRIPT
-new Vue({
+vue = new Vue({
     el: '#vueUpload',
     data: function () {
         return {
-            fileList: []
+            fileList: [],
+            count: 0
         };
     },
     methods: {
         handleRemove(file, fileList) {
             console.log(file, fileList);
-            {$changeValue}.val()
+            {$changeValue}.val('')
+            $.get('{$this->deleteUrl}?url='+file.response)
+            this.count--
         },
         handleSuccess(response, file, fileList) {
             {$changeValue}.val(response)
+            this.count++
+        },
+        beforeAvatarUpload(file) {
+            if(this.count == {$this->maxSize}){
+                this.{$errorMessage}.error('最多上传一张图片!');
+                return false;
+            }
         }
     }
 })
+
 __SCRIPT;
+        $css = <<<_css
+input.el-upload__input{display:none}
+_css;
+
     
         $this->getView()->registerJs($js);
+        $this->getView()->registerCss($css);
     }
 }
