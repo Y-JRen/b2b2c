@@ -29,5 +29,5 @@ class ActiveField extends \yii\widgets\ActiveField
      *
      * @var string
      */
-    public $template = '{label} <div class="col-lg-11">{input}{error}{hint}</div>';
+    public $template = '<div class="row">{label} <div class="col-lg-4">{input}{error}{hint}</div></div>';
 }

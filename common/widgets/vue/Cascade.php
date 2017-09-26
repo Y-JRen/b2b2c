@@ -8,6 +8,7 @@
 
 namespace common\widgets\vue;
 
+use common\widgets\vue\asset\CascadeAsset;
 use yii\base\InvalidConfigException;
 use yii\helpers\Html;
 use yii\widgets\InputWidget;

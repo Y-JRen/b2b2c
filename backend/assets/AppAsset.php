@@ -22,7 +22,6 @@ class AppAsset extends AssetBundle
     
     public $js = [
         'dist/js/app.js',
-        'plugins/layer/layer.js'
     ];
     
     public $depends = [

@@ -6,11 +6,30 @@
             [
                 'options' => ['class' => 'sidebar-menu'],
                 'items' => [
-                    ['label' => '菜单', 'options' => ['class' => 'header']],
-                    
-                    ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii']],
-                    ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug']],
-                    ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
+                    [
+                        'label' => '商品管理',
+                        'icon' => 'dashboard',
+                        'options' => ['class' => 'active treeview',],
+                        'items' => [
+                            ['label' => 'Gii', 'icon' => 'circle-o', 'url' => ['/gii']],
+                        ]
+                    ],
+                    [
+                        'label' => '订单管理',
+                        'icon' => 'dashboard',
+                        'options' => ['class' => 'active treeview',],
+                        'items' => [
+                            ['label' => 'Gii', 'icon' => 'circle-o', 'url' => ['/gii']],
+                        ]
+                    ],
+                    [
+                        'label' => '商户管理',
+                        'icon' => 'dashboard',
+                        'options' => ['class' => 'active treeview',],
+                        'items' => [
+                            ['label' => 'Gii', 'icon' => 'circle-o', 'url' => ['/gii']],
+                        ]
+                    ],
                 ],
             ]
         ) ?>

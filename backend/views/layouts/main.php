@@ -32,19 +32,16 @@ if (Yii::$app->controller->action->id === 'login') {
     <div class="wrapper">
 
         <?= $this->render(
-            'header.php',
-            ['directoryAsset' => $directoryAsset]
-        ) ?>
+            'header.php') ?>
 
         <?= $this->render(
-            'left.php',
-            ['directoryAsset' => $directoryAsset]
+            'left.php'
         )
         ?>
 
         <?= $this->render(
             'content.php',
-            ['content' => $content, 'directoryAsset' => $directoryAsset]
+            ['content' => $content]
         ) ?>
 
     </div>

@@ -37,7 +37,6 @@ class CascadeAsset extends AssetBundle
     public $js = [
         'https://unpkg.com/vue/dist/vue.js',
         'https://unpkg.com/element-ui/lib/index.js',
-        'js/cascade.js'
     ];
     
     public $depends = [
