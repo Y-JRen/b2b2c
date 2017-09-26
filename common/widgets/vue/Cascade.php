@@ -11,6 +11,7 @@ namespace common\widgets\vue;
 use common\widgets\vue\asset\CascadeAsset;
 use yii\base\InvalidConfigException;
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\widgets\InputWidget;
 
 /**
@@ -27,13 +28,15 @@ class Cascade extends InputWidget
      * @var array
      */
     public $attributes = [];
-    
-    
+
+
     public $clientOptions = [];
-    
+
     public $cascadeData = [];
-    
-    
+
+    public $callback = '';
+
+
     public function init()
     {
         parent::init();
@@ -41,7 +44,7 @@ class Cascade extends InputWidget
             throw new InvalidConfigException('级联字段未指定');
         }
     }
-    
+
     /**
      * @return string
      */
@@ -50,7 +53,7 @@ class Cascade extends InputWidget
         $this->registerClientScript();
         $content = Html::beginTag('div', ['class' => 'hidden']);
         foreach ($this->attributes as $attribute) {
-            $content .= Html::hiddenInput(Html::getInputName($this->model, $attribute), null,['id' => $attribute]);
+            $content .= Html::hiddenInput(Html::getInputName($this->model, $attribute), $this->model->$attribute, ['id' => $attribute]);
         }
         $content .= Html::endTag('div');
         $content .=Html::beginTag('div', ['id' => 'cascade']);
@@ -62,14 +65,14 @@ class Cascade extends InputWidget
         $content .= Html::endTag('div');
         return $content;
     }
-    
+
     /**
      * Registers required script for the plugin to work as jQuery File Uploader
      */
     public function registerClientScript()
     {
         CascadeAsset::register($this->getView());
-        $options = json_encode($this->cascadeData);
+        $options = Json::encode($this->cascadeData);
         $changeValue = '';
         foreach ($this->attributes as $k => $attribute) {
             $changeValue .= '$("#'.$attribute.'").val(value['.$k.']);'.PHP_EOL;
@@ -93,5 +96,5 @@ __SCRIPT;
 
         $this->getView()->registerJs($js);
     }
-    
+
 }
