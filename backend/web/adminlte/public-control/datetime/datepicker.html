@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/ionicons.min.css">
+    <link rel="stylesheet" type="text/css" href="js/datepicker/datepicker3.css">
+    <style type="text/css">
+        *, :after, :before {
+            box-sizing: border-box;
+        }
+        .none{ display: none !important; }
+        .timebox{ position: relative; width: 100%;}
+        .timebox.double-time{ min-width:220px; }
+        .timebox.single-time{ min-width:140px; }
+        .timebox .timeinputbox{ position: relative; float: left; width: 100%; padding: 0;  }
+        .timebox label{ float: left; margin-top: 8px; }
+        .timebox i{ position: absolute;  right:5px; top:10px; }
+        .timebox input{ width: 100%; padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+            -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel">
+            <div class="panel-heading"><h2>控件Datepicker Demo</h2></div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <!-- <div class="input-group date" class="" data-provide="datepicker">
+                            <input type="text" class="form-control" data-date-format="yyyy-mm-dd">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar fa fa-calendar"></span>
+                            </div>
+                        </div> -->
+                        <div class="timebox single-time" id="datetime">
+                            <div class="timeinputbox">
+                                <input type="text" class="form-control" id="date-time1" placeholder="请输入时间">
+                                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <div class="timebox single-time" id="datetime">
+                            <div class="timeinputbox">
+                                <input type="text" class="form-control" id="date-time2" placeholder="请输入时间">
+                                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- jQuery 2.2.3 -->
+<script src="js/jquery-1.7.1.js"></script>
+<script src="js/daterangepicker/moment.min.js"></script>
+<script src="js/datepicker/bootstrap-datepicker.js"></script>
+<script src="js/datepicker/locales/bootstrap-datepicker.zh-CN.js"></script>
+<script type="text/javascript">
+$('#date-time1').datepicker({format:"yyyy-mm-dd",language: 'cn',todayBtn: false,startView: 0,minViewMode: 0,autoclose: true});
+$('#date-time2').datepicker({format:"yyyy-mm",language: 'cn',todayBtn: false,startView: 0,minViewMode: 1,autoclose: true});
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+*{margin: 0; padding: 0; box-sizing:border-box;}
+li{list-style: none; width: 100%;}
+.container{ width: 900px; margin: 0 auto; }
+.print-list ul{ width: 100%; }
+.print-list li{padding: 10px 0; word-break:break-all; line-height: 1.5; border-bottom: 1px solid #ddd; }
+.btnbox{ clear: both; margin: 50px 0;  }
+.btnbox input{ width: 150px; height: 32px; line-height: 34px; background-color: #32aafa; text-align: center; border: 0; color: #fff; cursor: pointer; }

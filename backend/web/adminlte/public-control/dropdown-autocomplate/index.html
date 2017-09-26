@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>自定义联动选择框-支持jQuery和Zepto</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <style type="text/css">
+        *, :after, :before {
+            box-sizing: border-box;
+        }
+        .none{ display: none !important; }
+        .cascader{position: relative; width: 250px;}
+        .cascader .cascader-inputbox{ height:34px;}
+        .cascader .cascader-inputbox input{ width: 100%; height: 34px; line-height: 34px; padding: 0 3%; margin: 0; border:1px solid #ddd; border-radius: 5px; }
+        .cascader .dpac-inputbox input:hover,.cascader .cascader-inputbox input:focus{border:1px solid #49a9ee;}
+        .cascader .cascader-list {position: absolute; top: 36px; background: #fff; z-index: 1050; border-radius: 4px; white-space: nowrap; box-shadow: 0 1px 6px rgba(0,0,0,.2); font-size:0;}
+        .cascader .cascader-list ul{display: inline-block; vertical-align: top; border-right:1px solid #f5f5f5;  min-width: 118px; height: 240px; list-style: none; margin: 0; padding: 0; overflow-y: auto; -webkit-text-size-adjust:none;}
+        .cascader .cascader-list ul li{position: relative; list-style: none; zoom: 1; font-size: 14px; height: 28px; min-width: 111px; line-height: 1; padding: 7px 26px 7px 16px; cursor: pointer; white-space: nowrap; -webkit-transition: all .3s ease; transition: all .3s ease;}
+        .cascader .cascader-list ul li:hover,.cascader .cascader-list ul li.active{ background: #3879D9; font-weight: 700;color: #fff;}
+        .cascader .cascader-list ul li i{position: absolute; top: 9px; right: 15px; width: 10px;height: 10px;font-size: 12px; color: #ddd}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="cascader" id="cascader1">
+          <div class="cascader-inputbox">
+              <input class="cascader-input" type="text" autocomplete="off" value="" readonly placeholder="请选择"><i class="fa fa-set"></i>
+              <input class="sid" type="hidden" value="6,13,18">
+              <input class="level" type="hidden">
+          </div>
+          <div class="cascader-list none">
+              <ul class="cascader-menu">
+              </ul>
+          </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="cascader"  id="cascader2">
+          <div class="cascader-inputbox">
+              <input class="cascader-input" type="text" autocomplete="off" readonly value="请选择"><i class="fa fa-set"></i>
+              <input class="sid" type="hidden">
+          </div>
+          <div class="cascader-list none">
+              <ul class="cascader-menu">
+              </ul>
+          </div>
+        </div>
+    </div>
+<script src="../lib/js/jquery-1.7.1.js"></script>
+<script src="dropdown-autocomplate-plugin.js"></script>
+<script type="text/javascript">
+/*
+*
+*调用方法
+*@dataurl 为接口数据地址
+*/
+
+  $("#cascader1").Cascader({
+      dataurl:'b.json',
+      islevel:true,
+      onchange:function(a){
+        console.log(a.find(".sid").val());
+      }
+  });
+
+  $("#cascader2").Cascader({
+      dataurl:'b.json',
+      islevel:false
+  });
+
+</script>
+</body>
+</html>
