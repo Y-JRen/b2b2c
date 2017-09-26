@@ -21,10 +21,10 @@ use common\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model <?= ltrim($generator->modelClass, '\\') ?> */
-/* @var $form yii\widgets\ActiveForm */
+/* @var $form common\widgets\ActiveForm */
 ?>
 
-<div class="<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>-form box box-primary">
+<div class="<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>-form">
     <?= "<?php " ?>$form = ActiveForm::begin(); ?>
     <div class="box-body table-responsive">
 
@@ -35,7 +35,7 @@ use common\widgets\ActiveForm;
 } ?>
     </div>
     <div class="box-footer">
-        <?= "<?= " ?>Html::submitButton(<?= $generator->generateString('Save') ?>, ['class' => 'btn btn-success btn-flat']) ?>
+        <?= "<?= " ?>Html::submitButton(<?= $generator->generateString('保存') ?>, ['class' => 'btn btn-success btn-flat']) ?>
     </div>
     <?= "<?php " ?>ActiveForm::end(); ?>
 </div>

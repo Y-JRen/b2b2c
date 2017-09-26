@@ -13,7 +13,7 @@ echo "<?php\n";
 ?>
 
 use yii\helpers\Html;
-use <?= $generator->indexWidgetType === 'grid' ? "yii\\grid\\GridView" : "yii\\widgets\\ListView" ?>;
+use <?= $generator->indexWidgetType === 'grid' ? "common\\widgets\\GridView" : "yii\\widgets\\ListView" ?>;
 <?= $generator->enablePjax ? 'use yii\widgets\Pjax;' : '' ?>
 
 /* @var $this yii\web\View */
@@ -23,15 +23,17 @@ use <?= $generator->indexWidgetType === 'grid' ? "yii\\grid\\GridView" : "yii\\w
 $this->title = <?= $generator->generateString(Inflector::pluralize(Inflector::camel2words(StringHelper::basename($generator->modelClass)))) ?>;
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>-index box box-primary">
+<div class="<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>-index">
 <?= $generator->enablePjax ? "    <?php Pjax::begin(); ?>\n" : ''
-?>    <div class="box-header with-border">
+?>
+    <?php if(!empty($generator->searchModelClass)): ?>
+    <?= "        <?php "  ?>echo $this->render('_search', ['model' => $searchModel]);  ?> <?php endif; ?>
+    <div class="box-header with-border">
         <?= "<?= " ?>Html::a(<?= $generator->generateString('Create ' . Inflector::camel2words(StringHelper::basename($generator->modelClass))) ?>, ['create'], ['class' => 'btn btn-success btn-flat']) ?>
     </div>
     <div class="box-body table-responsive no-padding">
-<?php if(!empty($generator->searchModelClass)): ?>
-<?= "        <?php " . ($generator->indexWidgetType === 'grid' ? "// " : "") ?>echo $this->render('_search', ['model' => $searchModel]); ?>
-<?php endif;
+
+<?php
 
 if ($generator->indexWidgetType === 'grid'):
     echo "        <?= " ?>GridView::widget([
