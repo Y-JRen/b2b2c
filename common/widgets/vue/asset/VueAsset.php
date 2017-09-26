@@ -17,7 +17,7 @@ use yii\web\AssetBundle;
  * Class CascadeAsset
  * @package common\widgets\cascade
  */
-class CascadeAsset extends AssetBundle
+class VueAsset extends AssetBundle
 {
     public function init(){
         $this->sourcePath = __DIR__ . '/';

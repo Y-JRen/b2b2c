@@ -8,7 +8,7 @@
 
 namespace common\widgets\vue;
 
-use common\widgets\vue\asset\CascadeAsset;
+use common\widgets\vue\asset\VueAsset;
 use yii\base\InvalidConfigException;
 use yii\helpers\Html;
 use yii\widgets\InputWidget;
@@ -68,7 +68,7 @@ class Cascade extends InputWidget
      */
     public function registerClientScript()
     {
-        CascadeAsset::register($this->getView());
+        VueAsset::register($this->getView());
         $options = json_encode($this->cascadeData);
         $changeValue = '';
         foreach ($this->attributes as $k => $attribute) {

@@ -16,7 +16,12 @@ use common\widgets\ActiveForm;
 
         <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
 
-        <?= $form->field($model, 'logo')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'logo')->widget(
+                \common\widgets\vue\Upload::className(),
+                [
+                    'uploadUrl' => \yii\helpers\Url::to(['/file-upload/index'])
+                ]
+        ) ?>
 
         <?= $form->field($model, 'contact_person')->textInput(['maxlength' => true]) ?>
 
