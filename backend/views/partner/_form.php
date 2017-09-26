@@ -22,15 +22,13 @@ use common\widgets\ActiveForm;
 
         <?= $form->field($model, 'contact_phone')->textInput(['maxlength' => true]) ?>
 
-        <?= $form->field($model, 'create_time')->textInput() ?>
-
-        <?= $form->field($model, 'update_time')->textInput() ?>
-
         <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
     </div>
     <div class="box-footer">
         <?= Html::submitButton('确定', ['class' => 'btn btn-success btn-flat']) ?>
+        &nbsp;
+        <?= Html::a('取消',['index'], ['class' => 'btn btn-default btn-flat']) ?>
     </div>
     <?php ActiveForm::end(); ?>
 </div>
