@@ -25,6 +25,7 @@ use yii\helpers\ArrayHelper;
  */
 class CarLogic extends Instance
 {
+    
     /**
      * 根据品牌ID获取品牌名称
      *
@@ -32,9 +33,21 @@ class CarLogic extends Instance
      *
      * @return mixed
      */
+    public function getBrandName($brandId)
+    {
+        return $this->getBrand($brandId)->car_brand_name;
+    }
+    
+    /**
+     * 根据品牌ID获取品牌
+     *
+     * @param $brandId
+     *
+     * @return array|CarBrandInfo|null|\yii\db\ActiveRecord
+     */
     public function getBrand($brandId)
     {
-        return $this->getBrandMenu()[$brandId];
+        return CarBrandInfo::find()->where(['car_brand_id' => $brandId])->one();
     }
     
     /**
@@ -64,16 +77,27 @@ class CarLogic extends Instance
     }
     
     /**
+     * 根据厂商ID获取厂商
+     *
+     * @param $factoryId
+     *
+     * @return array|CarFactoryInfo|null|\yii\db\ActiveRecord
+     */
+    public function getFactory($factoryId)
+    {
+        return CarFactoryInfo::find()->where(['factory_id' => $factoryId])->one();
+    }
+    
+    /**
      * 根据厂商ID获取厂商名称
      *
      * @param $factoryId
      *
      * @return mixed
      */
-    public function getFactory($factoryId)
+    public function getFactoryName($factoryId)
     {
-        $factory = $this->getFactoryMenu();
-        return $factory[$factoryId];
+        return $this->getFactory($factoryId)->factory_name;
     }
     
     /**
@@ -94,12 +118,12 @@ class CarLogic extends Instance
     protected function getAllFactory()
     {
         $cache = \Yii::$app->cache;
-        if($brand = $cache->get("ALL_CAR_FACTORY")) {
-            return $brand;
+        if($factory = $cache->get("ALL_CAR_FACTORY")) {
+            return $factory;
         }
-        $brand = CarFactoryInfo::find()->all();
-        $cache->set("ALL_CAR_FACTORY", $brand);
-        return $brand;
+        $factory = CarFactoryInfo::find()->all();
+        $cache->set("ALL_CAR_FACTORY", $factory);
+        return $factory;
     }
     
     /**
@@ -122,15 +146,27 @@ class CarLogic extends Instance
     }
     
     /**
+     * 根据车系ID获取车系
+     *
+     * @param $seriesId
+     *
+     * @return array|CarBrandTypeInfo|null|\yii\db\ActiveRecord
+     */
+    public function getSeries($seriesId)
+    {
+        return CarBrandTypeInfo::find()->where(['car_brand_type_id' => $seriesId])->one();
+    }
+    
+    /**
      * 根据车系ID获取车系名称
      *
      * @param $seriesId
      *
      * @return mixed
      */
-    public function getSeries($seriesId)
+    public function getSeriesName($seriesId)
     {
-        return $this->getSeriesMenu()[$seriesId];
+        return $this->getSeries($seriesId)->car_brand_type_name;
     }
     
     /**
@@ -151,12 +187,12 @@ class CarLogic extends Instance
     protected function getAllSeries()
     {
         $cache = \Yii::$app->cache;
-        if($brand = $cache->get("ALL_CAR_SERIES")) {
-            return $brand;
+        if($series = $cache->get("ALL_CAR_SERIES")) {
+            return $series;
         }
-        $brand = CarBrandTypeInfo::find()->all();
-        $cache->set("ALL_CAR_SERIES", $brand);
-        return $brand;
+        $series = CarBrandTypeInfo::find()->all();
+        $cache->set("ALL_CAR_SERIES", $series);
+        return $series;
     }
     
     /**
@@ -176,15 +212,27 @@ class CarLogic extends Instance
     }
     
     /**
+     * 根据车型ID获取车型
+     *
+     * @param $carId
+     *
+     * @return array|CarBrandSonTypeInfo|null|\yii\db\ActiveRecord
+     */
+    public function getCar($carId)
+    {
+        return CarBrandSonTypeInfo::find()->where(['car_brand_son_type_id' => $carId])->one();
+    }
+    
+    /**
      * 根据车型ID获取车型名称
      *
      * @param $carId
      *
      * @return mixed
      */
-    public function getCar($carId)
+    public function getCarName($carId)
     {
-        return $this->getCarMenu()[$carId];
+        return $this->getCar($carId)->car_brand_son_type_name;
     }
     
     /**
@@ -205,12 +253,12 @@ class CarLogic extends Instance
     protected function getAllCar()
     {
         $cache = \Yii::$app->cache;
-        if($brand = $cache->get("ALL_CAR")) {
-            return $brand;
+        if($car = $cache->get("ALL_CAR")) {
+            return $car;
         }
-        $brand = CarBrandSonTypeInfo::find()->all();
-        $cache->set("ALL_CAR", $brand);
-        return $brand;
+        $car = CarBrandSonTypeInfo::find()->all();
+        $cache->set("ALL_CAR", $car);
+        return $car;
     }
     
     /**
@@ -222,6 +270,9 @@ class CarLogic extends Instance
      */
     public function getCarBySeriesId($seriesId)
     {
+        if ($seriesId < 1) {
+            return [];
+        }
         $cars = CarBrandSonTypeInfo::find()->select([
             'car_brand_son_type_id  as key',
             'car_brand_son_type_name  as value',

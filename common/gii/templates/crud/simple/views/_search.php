@@ -45,7 +45,7 @@ foreach ($generator->getColumnNames() as $attribute) {
     <div class="box-footer">
         <div class="pull-right">
             <?= "<?= " ?>Html::submitButton(<?= $generator->generateString('搜索') ?>, ['class' => 'btn btn-primary']) ?>
-            <?= "<?= " ?>Html::resetButton(<?= $generator->generateString('清楚') ?>, ['class' => 'btn btn-default']) ?>
+            <?= "<?= " ?>Html::resetButton(<?= $generator->generateString('清除') ?>, ['class' => 'btn btn-default']) ?>
         </div>
     </div>
 
