@@ -35,6 +35,14 @@ class Cascade extends InputWidget
 
     public $cascadeData = [];
 
+    /**
+     * @var array 和 attributes 对应的字段名称
+     */
+    public $arrNameAttributes = [];
+
+    /**
+     * @var string js执行回调函数
+     */
     public $callback = '';
 
     /**
@@ -68,6 +76,10 @@ class Cascade extends InputWidget
             $content .= Html::hiddenInput(Html::getInputName($this->model, $attribute), $this->model->$attribute, ['id' => $attribute]);
         }
 
+        foreach ($this->arrNameAttributes as $attribute) {
+            $content .= Html::hiddenInput(Html::getInputName($this->model, $attribute), $this->model->$attribute, ['id' => $attribute]);
+        }
+
         // 处理默认选中
         if (!$this->defaultValue) $this->defaultValue = rtrim($strAddress, ',');
 
@@ -97,6 +109,15 @@ class Cascade extends InputWidget
         foreach ($this->attributes as $k => $attribute) {
             $changeValue .= '$("#'.$attribute.'").val(value['.$k.']);'.PHP_EOL;
         }
+
+        $strNameValue = '';
+        foreach ($this->arrNameAttributes as $k => $attribute) {
+            $strNameValue .= 'if (arrName && arrName['.$k.']) $("#'.$attribute.'").val(arrName['.$k.']);'.PHP_EOL;
+        }
+
+        $function  = '';
+        if ($this->callback) $function .= $this->callback.'(value)';
+
         $js = <<<__SCRIPT
 var objVue{$this->jsVariableName} = new Vue({
     el: '#cascade',
@@ -109,6 +130,14 @@ var objVue{$this->jsVariableName} = new Vue({
     methods: {
         handleChange: function (value) {
             {$changeValue}
+            // 获取选中的标签
+            var arrName = this.\$children[0].currentLabels;
+            if (arrName.length > 0) {
+                {$strNameValue}
+            }
+            
+            // 可以自定义回调函数
+            {$function}
         }
     }
 })

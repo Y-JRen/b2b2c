@@ -6,11 +6,8 @@
  * Time: 14:08
  */
 
-namespace common\client\api;
+namespace common\logic;
 
-
-use common\logic\HttpLogic;
-use common\logic\Instance;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -34,8 +31,7 @@ class AMapLogic extends Instance
      * @var
      */
     public $url;
-    
-    
+
     /**
      * 地理编码 API 服务地址
      */
@@ -102,6 +98,8 @@ class AMapLogic extends Instance
             $this->error = '地址信息必填';
             return false;
         }
+
+        // 请求参数
         $param = [
             'key' => $this->key,
             'address' => $address,
@@ -110,15 +108,16 @@ class AMapLogic extends Instance
             'sig' => $this->sig,
             'output' => $this->output,
         ];
-        $data = HttpLogic::instance()->http_get($this->url, $param);
-        return $data;
+
+        // 返回结果
+        return HttpLogic::http_get($this->url, $param);
     }
     
     /**
-     * 获取经纬度
+     * 获取经纬度(可以指定获取其他信息)
      *
-     * @param $strAddress
-     * @param string $key
+     * @param string $strAddress 地址信息[省市区地址详情]
+     * @param string $key 默认获取经纬度信息
      *
      * @return array|mixed|null
      */
@@ -126,7 +125,7 @@ class AMapLogic extends Instance
     {
         // 请求接口
         $mixResult = $this->getCodeGeo($strAddress);
-        
+
         // 判断请求成功
         if ($mixResult && !empty($mixResult['status']) && $mixResult['status'] == 1) {
             $mixReturn = array_shift($mixResult['geocodes']);

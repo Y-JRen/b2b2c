@@ -2,13 +2,13 @@
 
 namespace backend\controllers;
 
-use common\client\BMap;
 use Yii;
 use common\models\Store;
-use backend\models\search\Store as StoreSearch;
 use yii\web\Controller;
+use common\logic\AMapLogic;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use backend\models\search\Store as StoreSearch;
 
 /**
  * StoreController implements the CRUD actions for Store model.
@@ -140,7 +140,7 @@ class StoreController extends Controller
         // 地址信息
         $strAddress = Yii::$app->request->get('address');
         if ($strAddress) {
-            $result = BMap::getAddress($strAddress);
+            $result = AMapLogic::instance()->getAddress($strAddress);
             $this->arrJson['errMsg'] = '获取失败';
             if ($result) {
                 $this->handleJson($result, '获取成功');

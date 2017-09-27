@@ -19,6 +19,7 @@ use common\logic\AreaLogic;
                 Cascade::className(),
                 [
                     'attributes' => ['province_code', 'city_code', 'area_code'],
+                    'arrNameAttributes' => ['province_name', 'city_name', 'area_name'],
                     'cascadeData' => AreaLogic::instance()->getAreaTree(2)
                 ]
         )->label('地址')?>
@@ -42,7 +43,7 @@ use common\logic\AreaLogic;
 
         <?= $form->field($model, 'lat')->textInput(['maxlength' => true]) ?>
 
-        <?= $form->field($model, 'status')->dropDownList([-1 => '删除', '无效', '有效'])->label('状态') ?>
+        <?= $form->field($model, 'status')->dropDownList([-1 => '删除', '无效', '有效'], ['value' => 1])->label('状态') ?>
 
         <?= $form->field($model, 'foreign_service')->dropDownList(['否', '是'])->label("是否对外服务") ?>
 
