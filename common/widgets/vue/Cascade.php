@@ -61,7 +61,6 @@ class Cascade extends InputWidget
      */
     public function run()
     {
-        $this->registerClientScript();
         $content = Html::beginTag('div', ['class' => 'hidden']);
         $strAddress = '';
         foreach ($this->attributes as $attribute) {
