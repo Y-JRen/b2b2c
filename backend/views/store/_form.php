@@ -58,7 +58,38 @@ use common\logic\AreaLogic;
 <script>
     $(function(){
        $("#get-address").click(function(){
-           alert(123);
+            // 第一步获取省市区地址
+            var arrAddress = objVue.$children[0].currentLabels,
+                strAddress = $("#store-address").val();
+            if (arrAddress.length <= 0) {
+                alert("需要先选择地址省市区信息");
+                return false;
+            }
+
+            // 获取详细地址
+            if (!strAddress) {
+                alert("请填写详细地址");
+                return false;
+            }
+
+            // 获取经纬度信息
+            $.ajax({
+                url: "<?=\yii\helpers\Url::toRoute(['get-address'])?>",
+                data: {
+                    address: arrAddress.join("") + strAddress
+                },
+                type: "get",
+                dataType: "json"
+            }).done(function(json) {
+                layer.msg(json.errMsg, {icon: json.errCode === 0 ? 6 : 5});
+                if (json.errCode === 0) {
+                    // 处理显示数据
+                    $("#store-lon").val(json.data[0]);
+                    $("#store-lat").val(json.data[1]);
+                }
+            }).fail(function(){
+                layer.msg("服务器繁忙,请稍候再试...", {icon: 5});
+            });
        });
     })
 </script>

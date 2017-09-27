@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use common\client\BMap;
 use Yii;
 use common\models\Store;
 use backend\models\search\Store as StoreSearch;
@@ -14,6 +15,15 @@ use yii\filters\VerbFilter;
  */
 class StoreController extends Controller
 {
+    /**
+     * @var array 返回json 数据
+     */
+    public $arrJson = [
+        'errCode' => 1,
+        'errMsg' => '请求参数为空',
+        'data' => [],
+    ];
+
     /**
      * @inheritdoc
      */
@@ -120,5 +130,30 @@ class StoreController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    /**
+     * 获取地址经纬度信息
+     */
+    public function actionGetAddress()
+    {
+        // 地址信息
+        $strAddress = Yii::$app->request->get('address');
+        if ($strAddress) {
+            $result = BMap::getAddress($strAddress);
+            $this->arrJson['errMsg'] = '获取失败';
+            if ($result) {
+                $this->handleJson($result, '获取成功');
+            }
+        }
+
+        $this->asJson($this->arrJson);
+    }
+
+    public function handleJson($data, $message = '处理成功', $code = 0)
+    {
+        $this->arrJson['data'] = $data;
+        $this->arrJson['errMsg'] = $message;
+        $this->arrJson['errCode'] = $code;
     }
 }
