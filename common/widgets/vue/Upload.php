@@ -28,10 +28,10 @@ class Upload extends InputWidget
     public $multiple = false;
     
     /**
-     * 上传图片张数
+     * 上传图片张数,单位 KB
      * @var int
      */
-    public $maxSize = 1;
+    public $maxSize = 1024;
     
     /**
      * 上传链接
@@ -39,6 +39,9 @@ class Upload extends InputWidget
      * @var string
      */
     public $uploadUrl;
+    
+    
+    public $limit = 1;
     
     /**
      * 删除链接
@@ -130,9 +133,13 @@ vue = new Vue({
             this.count++
         },
         beforeAvatarUpload(file) {
-            if(this.count == {$this->maxSize}){
-                this.{$errorMessage}.error('最多上传{$this->maxSize}张图片!');
+            const maxSize = file.size / 1024  < {$this->maxSize};
+            if(this.count == {$this->limit}){
+                this.{$errorMessage}.error('最多上传{$this->limit}张图片!');
                 return false;
+            }
+            if (!maxSize) {
+              this.{$errorMessage}.error('上传头像图片大小不能超过 {$this->maxSize} KB!');
             }
         }
     }

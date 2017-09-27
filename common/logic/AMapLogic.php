@@ -8,14 +8,34 @@
 
 namespace common\client\api;
 
+
+use common\logic\HttpLogic;
+use common\logic\Instance;
+use yii\helpers\ArrayHelper;
+
 /**
  * 高德地图API
  *
  * Class AMapClient
  * @package common\client
  */
-class AMapClient extends BaseClient
+class AMapLogic extends Instance
 {
+    /**
+     * 错误信息
+     *
+     * @var string
+     */
+    public $error = '';
+    
+    /**
+     * 请求URL
+     *
+     * @var
+     */
+    public $url;
+    
+    
     /**
      * 地理编码 API 服务地址
      */
@@ -64,6 +84,7 @@ class AMapClient extends BaseClient
     public function __construct()
     {
         $this->key = \Yii::$app->params['amap']['key'];
+        $this->url = self::GET_CODE_GEO_URL;
     }
     
     
@@ -89,8 +110,34 @@ class AMapClient extends BaseClient
             'sig' => $this->sig,
             'output' => $this->output,
         ];
-        $this->url = self::GET_CODE_GEO_URL;
-        $data = $this->httpGet($param);
+        $data = HttpLogic::instance()->http_get($this->url, $param);
         return $data;
+    }
+    
+    /**
+     * 获取经纬度
+     *
+     * @param $strAddress
+     * @param string $key
+     *
+     * @return array|mixed|null
+     */
+    public function getAddress($strAddress, $key = 'location')
+    {
+        // 请求接口
+        $mixResult = $this->getCodeGeo($strAddress);
+        
+        // 判断请求成功
+        if ($mixResult && !empty($mixResult['status']) && $mixResult['status'] == 1) {
+            $mixReturn = array_shift($mixResult['geocodes']);
+            $mixReturn = ArrayHelper::getValue($mixReturn, $key);
+            if ($mixReturn && $key === 'location') {
+                $mixReturn = explode(',', $mixReturn);
+            }
+        } else {
+            $mixReturn = null;
+        }
+        
+        return $mixReturn;
     }
 }
