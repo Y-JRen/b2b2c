@@ -453,3 +453,5 @@ table.dataTable td {
     margin-top: 0.5em;
   }
 }
+
+.isHide {display: none}

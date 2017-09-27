@@ -6,7 +6,9 @@
  * Time: 14:08
  */
 
-namespace common\client\api;
+namespace common\logic;
+
+use yii\helpers\ArrayHelper;
 
 /**
  * 高德地图API
@@ -14,8 +16,22 @@ namespace common\client\api;
  * Class AMapClient
  * @package common\client
  */
-class AMapClient extends BaseClient
+class AMapLogic extends Instance
 {
+    /**
+     * 错误信息
+     *
+     * @var string
+     */
+    public $error = '';
+    
+    /**
+     * 请求URL
+     *
+     * @var
+     */
+    public $url;
+
     /**
      * 地理编码 API 服务地址
      */
@@ -64,6 +80,7 @@ class AMapClient extends BaseClient
     public function __construct()
     {
         $this->key = \Yii::$app->params['amap']['key'];
+        $this->url = self::GET_CODE_GEO_URL;
     }
     
     
@@ -81,6 +98,8 @@ class AMapClient extends BaseClient
             $this->error = '地址信息必填';
             return false;
         }
+
+        // 请求参数
         $param = [
             'key' => $this->key,
             'address' => $address,
@@ -89,8 +108,35 @@ class AMapClient extends BaseClient
             'sig' => $this->sig,
             'output' => $this->output,
         ];
-        $this->url = self::GET_CODE_GEO_URL;
-        $data = $this->httpGet($param);
-        return $data;
+
+        // 返回结果
+        return HttpLogic::http_get($this->url, $param);
+    }
+    
+    /**
+     * 获取经纬度(可以指定获取其他信息)
+     *
+     * @param string $strAddress 地址信息[省市区地址详情]
+     * @param string $key 默认获取经纬度信息
+     *
+     * @return array|mixed|null
+     */
+    public function getAddress($strAddress, $key = 'location')
+    {
+        // 请求接口
+        $mixResult = $this->getCodeGeo($strAddress);
+
+        // 判断请求成功
+        if ($mixResult && !empty($mixResult['status']) && $mixResult['status'] == 1) {
+            $mixReturn = array_shift($mixResult['geocodes']);
+            $mixReturn = ArrayHelper::getValue($mixReturn, $key);
+            if ($mixReturn && $key === 'location') {
+                $mixReturn = explode(',', $mixReturn);
+            }
+        } else {
+            $mixReturn = null;
+        }
+        
+        return $mixReturn;
     }
 }

@@ -4,6 +4,7 @@ namespace common\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use common\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "store".
@@ -39,6 +40,19 @@ class Store extends ActiveRecord
     const FOREIGN_SERVICE_OPEN = 1; // 开放
     const FOREIGN_SERVICE_CLOSE = 0; // 不开放
 
+    /**
+     * 定义行为
+     *
+     * @return array
+     */
+    public function behaviors()
+    {
+        // 定义行为,自动维护 create_time 和 update_time 字段
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
+
 
     /**
      * @inheritdoc
@@ -55,7 +69,7 @@ class Store extends ActiveRecord
     {
         return [
             [['is_delete', 'foreign_service'], 'default', 'value' => 0],
-            ['status', 'default', 'value' => 1],
+            [['status', 'partner_id'], 'default', 'value' => 1],
             [[
                 'name', 'province_code', 'province_name',
                 'city_code', 'city_name', 'area_code',

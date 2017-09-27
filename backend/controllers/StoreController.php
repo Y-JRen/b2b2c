@@ -2,27 +2,25 @@
 
 namespace backend\controllers;
 
-use common\client\BMap;
+use common\models\Partner;
 use Yii;
 use common\models\Store;
-use backend\models\search\Store as StoreSearch;
-use yii\web\Controller;
+use common\logic\AMapLogic;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use backend\models\search\Store as StoreSearch;
 
 /**
  * StoreController implements the CRUD actions for Store model.
  */
 class StoreController extends Controller
 {
+
     /**
-     * @var array 返回json 数据
+     * @var string 定义modelClass
      */
-    public $arrJson = [
-        'errCode' => 1,
-        'errMsg' => '请求参数为空',
-        'data' => [],
-    ];
+    public $modelClass = 'common\models\Store';
 
     /**
      * @inheritdoc
@@ -45,12 +43,12 @@ class StoreController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new StoreSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        // 查询合作商信息
+        $partner = Partner::find()->select(['id', 'name'])->all();
+        $partner = ArrayHelper::map($partner, 'id', 'name');
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+            'partner' => $partner,
         ]);
     }
 
@@ -64,56 +62,6 @@ class StoreController extends Controller
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
-    }
-
-    /**
-     * Creates a new Store model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Store();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Updates an existing Store model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Deletes an existing Store model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
     }
 
     /**
@@ -140,7 +88,7 @@ class StoreController extends Controller
         // 地址信息
         $strAddress = Yii::$app->request->get('address');
         if ($strAddress) {
-            $result = BMap::getAddress($strAddress);
+            $result = AMapLogic::instance()->getAddress($strAddress);
             $this->arrJson['errMsg'] = '获取失败';
             if ($result) {
                 $this->handleJson($result, '获取成功');

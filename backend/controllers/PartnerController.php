@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\form\PartnerForm;
 use Yii;
 use common\models\Partner;
 use backend\models\search\Partner as PartnerSearch;
@@ -63,11 +64,16 @@ class PartnerController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Partner();
+        $model = new PartnerForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post()) && $model->baseSave()) {
+            return $this->redirect(['index']);
         } else {
+            if ($model->errors) {
+                foreach ($model->errors as $error){
+                    Yii::$app->session->setFlash('error', $error[0]);
+                }
+            }
             return $this->render('create', [
                 'model' => $model,
             ]);
@@ -82,11 +88,16 @@ class PartnerController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        $model = new PartnerForm();
+        $model = $model->findModel($id);
+        if ($model->load(Yii::$app->request->post()) && $model->baseSave()) {
+            return $this->redirect(['index']);
         } else {
+            if ($model->errors) {
+                foreach ($model->errors as $error){
+                    Yii::$app->session->setFlash('error', $error[0]);
+                }
+            }
             return $this->render('update', [
                 'model' => $model,
             ]);
@@ -115,7 +126,7 @@ class PartnerController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Partner::findOne($id)) !== null) {
+        if (($model = PartnerForm::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

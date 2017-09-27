@@ -2,10 +2,11 @@
 
 namespace backend\models\search;
 
+use common\models\PartnerIdentity;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\Partner as PartnerModel;
+use backend\models\form\PartnerForm as PartnerModel;
 
 /**
  * Partner represents the model behind the search form of `common\models\Partner`.
@@ -19,7 +20,7 @@ class Partner extends PartnerModel
     {
         return [
             [['id'], 'integer'],
-            [['name', 'address', 'logo', 'contact_person', 'contact_phone', 'create_time', 'update_time', 'description'], 'safe'],
+            [['name', 'contact_person', 'contact_phone', 'create_time', 'update_time', 'partner_identity'], 'safe'],
         ];
     }
 
@@ -41,16 +42,23 @@ class Partner extends PartnerModel
      */
     public function search($params)
     {
-        $query = PartnerModel::find();
-
+        $this->load($params);
+        if($this->partner_identity) {
+            $query = PartnerModel::find()->alias('a')->innerJoin(PartnerIdentity::tableName() .'  b', 'b.partner_id = a.id');
+            $query->where([
+                'in', 'b.identity_id', $this->partner_identity
+            ]);
+        } else {
+            $query = PartnerModel::find()->alias('a');
+        }
+        
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
         ]);
-
-        $this->load($params);
+        
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -60,18 +68,15 @@ class Partner extends PartnerModel
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'create_time' => $this->create_time,
-            'update_time' => $this->update_time,
+            'a.id' => $this->id,
+            'a.create_time' => $this->create_time,
+            'a.update_time' => $this->update_time,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'address', $this->address])
-            ->andFilterWhere(['like', 'logo', $this->logo])
-            ->andFilterWhere(['like', 'contact_person', $this->contact_person])
-            ->andFilterWhere(['like', 'contact_phone', $this->contact_phone])
-            ->andFilterWhere(['like', 'description', $this->description]);
-
+        $query->andFilterWhere(['like', 'a.name', $this->name])
+            ->andFilterWhere(['like', 'a.address', $this->address])
+            ->andFilterWhere(['like', 'a.contact_person', $this->contact_person])
+            ->andFilterWhere(['like', 'a.contact_phone', $this->contact_phone]);
         return $dataProvider;
     }
 }
