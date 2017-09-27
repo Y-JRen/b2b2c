@@ -63,7 +63,9 @@ class Upload extends InputWidget
     {
         $this->registerClientScript();
         $content = Html::beginTag('div', ['class' => 'hidden']);
-        $content .= Html::hiddenInput(Html::getInputName($this->model, $this->attribute), null,['id' => $this->attribute]);
+        $key = $this->attribute;
+        $content .= Html::hiddenInput(Html::getInputName($this->model, $this->attribute),
+            $this->model->$key,['id' => $this->attribute]);
         
         $content .= Html::endTag('div');
         $content .= Html::beginTag('div', ['id' => 'vueUpload']);
@@ -95,6 +97,16 @@ class Upload extends InputWidget
         
         } else {
             $changeValue = '$("#'.$this->attribute.'")';
+            $key = $this->attribute;
+            $fileList = [];
+            if($this->model->$key) {
+                $pathInfo = pathinfo($this->model->$key);
+                $fileList[] = [
+                    'name' => $pathInfo['basename'],
+                    'url' => $this->model->$key
+                ];
+            }
+            $fileList = json_encode($fileList);
         }
         $errorMessage = '$message';
         $js = <<<__SCRIPT
@@ -102,7 +114,7 @@ vue = new Vue({
     el: '#vueUpload',
     data: function () {
         return {
-            fileList: [],
+            fileList: {$fileList},
             count: 0
         };
     },
@@ -119,7 +131,7 @@ vue = new Vue({
         },
         beforeAvatarUpload(file) {
             if(this.count == {$this->maxSize}){
-                this.{$errorMessage}.error('最多上传一张图片!');
+                this.{$errorMessage}.error('最多上传{$this->maxSize}张图片!');
                 return false;
             }
         }
