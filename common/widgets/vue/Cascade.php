@@ -11,6 +11,8 @@ namespace common\widgets\vue;
 use common\widgets\vue\asset\VueAsset;
 use yii\base\InvalidConfigException;
 use yii\helpers\Html;
+use yii\helpers\Json;
+use yii\web\View;
 use yii\widgets\InputWidget;
 
 /**
@@ -35,6 +37,16 @@ class Cascade extends InputWidget
 
     public $callback = '';
 
+    /**
+     * @var string vue 定义js 变量
+     */
+    public $jsVariableName = '';
+
+    /**
+     * @var string 默认值
+     */
+    public $defaultValue = '';
+
 
     public function init()
     {
@@ -49,17 +61,26 @@ class Cascade extends InputWidget
      */
     public function run()
     {
-        $this->registerClientScript();
         $content = Html::beginTag('div', ['class' => 'hidden']);
+        $strAddress = '';
         foreach ($this->attributes as $attribute) {
+            $strAddress .= '"'.$this->model->$attribute.'",';
             $content .= Html::hiddenInput(Html::getInputName($this->model, $attribute), $this->model->$attribute, ['id' => $attribute]);
         }
+
+        // 处理默认选中
+        if (!$this->defaultValue) $this->defaultValue = rtrim($strAddress, ',');
+
+        $this->registerClientScript();
         $content .= Html::endTag('div');
         $content .=Html::beginTag('div', ['id' => 'cascade']);
         $content .= ' <el-cascader
             :options="options"
+            filterable
             v-model="selectedOptions"
-            @change="handleChange">
+            clearable
+            @change="handleChange"
+          >
           </el-cascader>';
         $content .= Html::endTag('div');
         return $content;
@@ -71,18 +92,18 @@ class Cascade extends InputWidget
     public function registerClientScript()
     {
         VueAsset::register($this->getView());
-        $options = json_encode($this->cascadeData);
+        $options = Json::encode($this->cascadeData);
         $changeValue = '';
         foreach ($this->attributes as $k => $attribute) {
             $changeValue .= '$("#'.$attribute.'").val(value['.$k.']);'.PHP_EOL;
         }
         $js = <<<__SCRIPT
-new Vue({
+var objVue{$this->jsVariableName} = new Vue({
     el: '#cascade',
     data: function () {
         return {
             options: {$options},
-            selectedOptions: []
+            selectedOptions: [{$this->defaultValue}]
         };
     },
     methods: {
@@ -93,7 +114,7 @@ new Vue({
 })
 __SCRIPT;
 
-        $this->getView()->registerJs($js);
+        $this->getView()->registerJs($js, View::POS_END);
     }
 
 }
