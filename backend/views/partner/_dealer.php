@@ -4,32 +4,39 @@ use yii\helpers\Html;
 use common\widgets\ActiveForm;
 use yii\helpers\Url;
 use common\logic\CarLogic;
+use kartik\select2\Select2;
 
 $intPartnerId = $model->id;
+
+$faceModel = new \common\models\DealerForm();
+$faceModel->dealer = [1, 2];
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Partner */
 /* @var $form common\widgets\ActiveForm */
 
-$depends = ['depends' => 'backend\assets\AppAsset'];
-$this->registerCssFile('/adminlte/plugins/select2/select2.min.css', $depends);
-$this->registerJsFile('/adminlte/plugins/select2/select2.full.js', $depends);
 ?>
 
 <div class="partner-form">
     <?php $form = ActiveForm::begin(); ?>
     <div class="box-body">
-        <div class="form-group">
-            <div class="row">
-                <label class="control-label col-lg-1" for="car_factory">厂商</label>
-                <div class="col-lg-10">
-                    <?=Html::dropDownList('car_factory', '', CarLogic::instance()->getFactoryMenu(), [
-                        'class' => 'form-control select2',
-                        'multiple' => 'multiple',
-                    ])?>
-                </div>
-            </div>
-        </div>
+
+        <?= $form->field($faceModel, 'dealer')->widget(
+            Select2::className(),
+            [
+                'options' => [
+                        'multiple' => true, 'placeholder' => '请选择 ...'
+                ],
+                'data' => CarLogic::instance()->getFactoryMenu(),
+                'maintainOrder' => true,
+                'name' => 'partner_identity[]',
+                'pluginOptions' => [
+                    'tags' => true,
+                    'maximumInputLength' => 10
+                ]
+            ]
+        ) ?>
+
         <div class="form-group">
             <div class="row">
                 <label class="control-label col-lg-1" for="store_id_info">可用门店</label>
