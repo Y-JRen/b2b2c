@@ -11,8 +11,8 @@ $this->title = '商户管理';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="partner-index">
-    <?php Pjax::begin(); ?>
-                <?php echo $this->render('_search', ['model' => $searchModel]);  ?>     <div class="box-header with-border">
+    <?php echo $this->render('_search', ['model' => $searchModel]);  ?>
+    <div class="box-header with-border">
         <?= Html::a('新增商户', ['create'], ['class' => 'btn btn-success btn-flat']) ?>
     </div>
     <div class="box-body table-responsive no-padding">
@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'dataProvider' => $dataProvider,
             'layout' => "{items}\n{pager}",
             'columns' => [
-                ['class' => 'yii\grid\SerialColumn'],
+                //['class' => 'yii\grid\SerialColumn'],
 
                 'id',
                 'name',
@@ -35,5 +35,4 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]); ?>
     </div>
-    <?php Pjax::end(); ?>
 </div>
