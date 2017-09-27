@@ -55,7 +55,7 @@ class HttpLogic extends Instance
         if ($writeLog || $errMsg) {
             $objHttpLogMod = new HttpLog();
             if (isset($options[CURLOPT_POSTFIELDS])) {
-                $objHttpLogMod->inputData = $options[CURLOPT_POSTFIELDS];
+                $objHttpLogMod->input_data = $options[CURLOPT_POSTFIELDS];
             }
             $objHttpLogMod->url = $url;
             $objHttpLogMod->result = (string)$result;

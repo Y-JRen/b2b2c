@@ -69,7 +69,7 @@ class Store extends ActiveRecord
     {
         return [
             [['is_delete', 'foreign_service'], 'default', 'value' => 0],
-            ['status', 'default', 'value' => 1],
+            [['status', 'partner_id'], 'default', 'value' => 1],
             [[
                 'name', 'province_code', 'province_name',
                 'city_code', 'city_name', 'area_code',

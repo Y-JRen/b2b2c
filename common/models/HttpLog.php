@@ -12,7 +12,7 @@ use yii\db\BaseActiveRecord;
  *
  * @property integer $id
  * @property string $url
- * @property string $inputData
+ * @property string $input_data
  * @property string $result
  * @property string $error
  * @property string $create_time
@@ -51,7 +51,7 @@ class HttpLog extends ActiveRecord
     public function rules()
     {
         return [
-            [['inputData', 'result'], 'string'],
+            [['input_data', 'result'], 'string'],
             [['create_time'], 'safe'],
             [['url'], 'string', 'max' => 255],
         ];
@@ -65,7 +65,7 @@ class HttpLog extends ActiveRecord
         return [
             'id' => 'ID',
             'url' => 'Url',
-            'inputData' => 'Input Data',
+            'input_data' => 'Input Data',
             'result' => 'Result',
             'error' => '错误信息',
             'create_time' => 'Create Time',
