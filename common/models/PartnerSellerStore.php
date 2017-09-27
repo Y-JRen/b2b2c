@@ -4,6 +4,7 @@ namespace common\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use common\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "partner_seller_store".
@@ -12,9 +13,24 @@ use yii\db\ActiveRecord;
  * @property integer $partner_id
  * @property integer $store_id
  * @property integer $is_partner_self
+ * @property integer $create_time
+ * @property integer $update_time
  */
 class PartnerSellerStore extends ActiveRecord
 {
+    /**
+     * 定义行为
+     *
+     * @return array
+     */
+    public function behaviors()
+    {
+        // 定义行为,自动维护 create_time 和 update_time 字段
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
+
     /**
      * @inheritdoc
      */
@@ -30,7 +46,7 @@ class PartnerSellerStore extends ActiveRecord
     {
         return [
             [['partner_id', 'store_id', 'is_partner_self'], 'required'],
-            [['partner_id', 'store_id', 'is_partner_self'], 'integer'],
+            [['partner_id', 'store_id', 'is_partner_self', 'create_time', 'update_time'], 'integer'],
         ];
     }
 

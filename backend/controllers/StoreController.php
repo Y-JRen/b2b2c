@@ -6,6 +6,7 @@ use common\models\Partner;
 use Yii;
 use common\models\Store;
 use common\logic\AMapLogic;
+
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,6 +22,13 @@ class StoreController extends Controller
      * @var string 定义modelClass
      */
     public $modelClass = 'common\models\Store';
+
+    public function where($params)
+    {
+        return [
+            'partner_id' => '='
+        ];
+    }
 
     /**
      * @inheritdoc
@@ -91,17 +99,10 @@ class StoreController extends Controller
             $result = AMapLogic::instance()->getAddress($strAddress);
             $this->arrJson['errMsg'] = '获取失败';
             if ($result) {
-                $this->handleJson($result, '获取成功');
+                $this->handleJson($result, 0, '获取成功');
             }
         }
 
         $this->asJson($this->arrJson);
-    }
-
-    public function handleJson($data, $message = '处理成功', $code = 0)
-    {
-        $this->arrJson['data'] = $data;
-        $this->arrJson['errMsg'] = $message;
-        $this->arrJson['errCode'] = $code;
     }
 }

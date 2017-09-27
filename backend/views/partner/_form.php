@@ -4,7 +4,6 @@ use yii\helpers\Html;
 use common\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 
-
 $model->partner_identity = ArrayHelper::getColumn($model->partnerIdentity, 'identity_id');
 
 /* @var $this yii\web\View */
@@ -14,8 +13,8 @@ $model->partner_identity = ArrayHelper::getColumn($model->partnerIdentity, 'iden
 
 <div class="partner-form">
     <?php $form = ActiveForm::begin(); ?>
-    
-    <div class="box-body table-responsive">
+
+    <div class="box-body">
     
         <?= $form->field($model, 'partner_identity')->widget(\kartik\select2\Select2::className(), [
             'options' => ['multiple' => true, 'placeholder' => '请选择 ...'],
@@ -27,7 +26,6 @@ $model->partner_identity = ArrayHelper::getColumn($model->partnerIdentity, 'iden
                 'maximumInputLength' => 10
             ]
         ]) ?>
-    
         <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
         <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
