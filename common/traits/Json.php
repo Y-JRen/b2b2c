@@ -18,7 +18,7 @@ trait Json
      */
     protected $arrJson = [
         'errCode' => 201,
-        'errMsg'  => '',
+        'errMsg'  => '请求参数为空',
         'data'    => [],
     ];
 

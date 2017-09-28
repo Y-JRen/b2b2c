@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use \yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "sku_item".
@@ -20,7 +21,7 @@ use Yii;
  * @property string $sell_type
  * @property string $spu_type
  */
-class SkuItem extends \yii\db\ActiveRecord
+class SkuItem extends ActiveRecord
 {
     /**
      * @inheritdoc
@@ -49,19 +50,6 @@ class SkuItem extends \yii\db\ActiveRecord
      */
     public function attributeLabels()
     {
-        return [
-            'id' => '自增id',
-            'spu_id' => 'Spu ID',
-            'partner_id' => '合作商',
-            'des' => '商户自己的spu的描述',
-            'create_time' => '创建时间',
-            'update_time' => '更新时间',
-            'status' => '状态',
-            'name' => '商品名称',
-            'subname' => 'Subname',
-            'deposit' => 'Deposit',
-            'sell_type' => '销售方式，汽车类的有 normal 普通 lease 租赁两种方式',
-            'spu_type' => '冗余字段  spu的类型',
-        ];
+        return ['id' => '自增id', 'spu_id' => 'Spu ID', 'partner_id' => '合作商', 'des' => '商户自己的spu的描述', 'create_time' => '创建时间', 'update_time' => '更新时间', 'status' => '状态', 'name' => '商品名称', 'subname' => 'Subname', 'deposit' => 'Deposit', 'sell_type' => '销售方式，汽车类的有 normal 普通 lease 租赁两种方式', 'spu_type' => '冗余字段  spu的类型',];
     }
 }
