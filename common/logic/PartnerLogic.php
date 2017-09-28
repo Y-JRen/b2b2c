@@ -11,8 +11,10 @@ namespace common\logic;
 
 use common\models\Partner;
 use common\models\PartnerSallerCarFactory;
+use common\models\Store;
 use Yii;
 use yii\db\Expression;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -105,5 +107,31 @@ class PartnerLogic extends Instance
         }
 
         return $isReturn;
+    }
+
+    /**
+     * 查询合作商可以选择的门店信息（就是对外的，不是自己的门店）
+     *
+     * @param integer $id  合作商ID
+     * @param array $select 查询字段信息默认 id, name
+     * @return array
+     */
+    public function findCanChooseStore($id, $select = ['id', 'name'])
+    {
+        // 查询门店的查询对象
+        $storeQuery = (new Query())->from('partner_seller_store')
+            ->select('store_id')
+            ->where(['partner_id' => $id]);
+
+        // 查询对外的门店(不是自己的)
+        return (new Query())->select($select)
+            ->from('store')
+            ->where([
+                'and',
+                ['not in', 'id', $storeQuery],
+                ['status' => Store::STATUS_ACTIVE],
+                ['foreign_service' => Store::FOREIGN_SERVICE_OPEN]
+            ])
+            ->all();
     }
 }

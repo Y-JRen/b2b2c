@@ -169,7 +169,8 @@ class PartnerController extends Controller
         if ($id) {
             $array = (new Query())->select([
                 't.province_name', 't.city_name', 't.area_name',
-                't.address', 't.contact_person', 't.contact_phone', 't.name'
+                't.address', 't.contact_person', 't.contact_phone',
+                't.name', 'p.is_partner_self',
             ])->from('partner_seller_store p')
                 ->innerJoin('store t', '`t`.`id` = `p`.`store_id`')
                 ->where(['p.partner_id' => $id, 't.status' => Store::STATUS_ACTIVE])
@@ -192,15 +193,7 @@ class PartnerController extends Controller
         $store = [];
         if ($id) {
             // 查询对外的门店(不是自己的)
-            $store = (new Query())->select(['t.id', 't.name'])
-                ->from('store t')
-                ->where([
-                    'and',
-                    ['not in', 't.id', (new Query())->from('partner_seller_store')->select('store_id')->where(['partner_id' => $id])],
-                    ['t.status' => Store::STATUS_ACTIVE],
-                    ['t.foreign_service' => Store::FOREIGN_SERVICE_OPEN]
-                ])
-                ->all();
+            $store = PartnerLogic::instance()->findCanChooseStore($id);
         }
 
         return $this->renderAjax('_select_store', [

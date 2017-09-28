@@ -110,6 +110,15 @@ $faceModel->setPartnerId($intPartnerId);
                 "data": "contact_phone",
                 "sName": "contact_phone",
                 "bSortable": false
+            },
+            {
+                "title": "是否自营门店",
+                "data": "is_partner_self",
+                "sName": "is_partner_self",
+                "bSortable": false,
+                "render": function(value) {
+                    return parseInt(value) === 1 ? "是" : "否"
+                }
             }
         ]
     });
