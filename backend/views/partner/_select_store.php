@@ -3,13 +3,13 @@
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                     aria-hidden="true">×</span></button>
-            <h4 class="modal-title">选择可用门店</h4>
+            <h4 class="modal-title"><?=$title?></h4>
         </div>
         <div class="modal-body">
             <form method="post" class="form-horizontal" name="edit-form" id="edit-form-info">
                 <fieldset>
                     <div class="form-group">
-                        <label class="col-sm-3 contridl-label"> 可用门店 </label>
+                        <label class="col-sm-3 control-label"> <?=$label?> </label>
                         <div class="col-sm-9">
                             <select name="store_id" id="select-store-id" class="form-control" required="true">
                                 <?php if ($store): ?>

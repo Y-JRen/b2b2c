@@ -4,26 +4,21 @@ namespace common\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\db\BaseActiveRecord;
 use common\behaviors\TimestampBehavior;
 
 /**
- * This is the model class for table "partner_seller_store".
+ * This is the model class for table "sku_item_stores".
  *
  * @property integer $id
- * @property integer $partner_id
+ * @property integer $item_id
  * @property integer $store_id
- * @property integer $is_partner_self
- * @property integer $create_time
- * @property integer $update_time
+ * @property integer $partner_id
+ * @property integer $spu_id
+ * @property string $create_time
  */
-class PartnerSellerStore extends ActiveRecord
+class SkuItemStores extends ActiveRecord
 {
-    /**
-     * 是否自营门店状态说明
-     */
-    const IS_PARTNER_SELF_YES = 1; // 是
-    const IS_PARTNER_SELF_NO = 0;  // 否
-
     /**
      * 定义行为
      *
@@ -33,7 +28,12 @@ class PartnerSellerStore extends ActiveRecord
     {
         // 定义行为,自动维护 create_time 和 update_time 字段
         return [
-            TimestampBehavior::className(),
+            [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    BaseActiveRecord::EVENT_BEFORE_INSERT => ['create_time']
+                ],
+            ]
         ];
     }
 
@@ -42,7 +42,7 @@ class PartnerSellerStore extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'partner_seller_store';
+        return 'sku_item_stores';
     }
 
     /**
@@ -51,8 +51,9 @@ class PartnerSellerStore extends ActiveRecord
     public function rules()
     {
         return [
-            [['partner_id', 'store_id', 'is_partner_self'], 'required'],
-            [['partner_id', 'store_id', 'is_partner_self', 'create_time', 'update_time'], 'integer'],
+            [['item_id', 'store_id', 'partner_id', 'spu_id'], 'required'],
+            [['item_id', 'store_id', 'partner_id', 'spu_id'], 'integer'],
+            [['create_time'], 'safe'],
         ];
     }
 
@@ -63,9 +64,11 @@ class PartnerSellerStore extends ActiveRecord
     {
         return [
             'id' => '自增id',
-            'partner_id' => '合作商id',
-            'store_id' => '门店id',
-            'is_partner_self' => '是否是合作商自己的门店 0 - 不是 1 是',
+            'item_id' => 'spu_partner表中的id',
+            'store_id' => '销售的门店',
+            'partner_id' => 'Partner ID',
+            'spu_id' => 'Spu ID',
+            'create_time' => 'Create Time',
         ];
     }
 

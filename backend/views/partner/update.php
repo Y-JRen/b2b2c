@@ -13,13 +13,13 @@ $this->params['breadcrumbs'][] = '更新商户';
 <div class="box-body">
     <div class="nav-tabs-custom">
         <!-- Tabs within a box -->
-        <ul class="nav nav-tabs pull-left" id="ul-div">
+        <ul class="nav nav-tabs" id="ul-div">
             <li class="active">
                 <a href="#basic-info" data-toggle="tab" aria-expanded="true">基本信息</a>
             </li>
-            <li class=""><a href="#dealer-info" styel="display:none" v-show="dealer" data-toggle="tab" aria-expanded="false">经销商信息</a></li>
-            <li class=""><a href="#store-info-div" styel="display:none" v-show="store" data-toggle="tab" aria-expanded="false">门店信息</a></li>
-            <li class=""><a href="#financial-info" styel="display:none" v-show="financial" data-toggle="tab" aria-expanded="false">金融管理</a></li>
+            <li class=""><a href="#dealer-info" style="display:none" v-show="dealer" data-toggle="tab" aria-expanded="false">经销商信息</a></li>
+            <li class=""><a href="#store-info-div" style="display:none" v-show="store" data-toggle="tab" aria-expanded="false">门店信息</a></li>
+            <li class=""><a href="#financial-info" style="display:none" v-show="financial" data-toggle="tab" aria-expanded="false">金融管理</a></li>
         </ul>
         <div class="tab-content no-padding">
             <!-- 基本信息 -->

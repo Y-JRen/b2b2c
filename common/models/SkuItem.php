@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use \yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "sku_item".
@@ -19,7 +20,7 @@ use Yii;
  * @property integer $deposit
  * @property string $spu_type_id
  */
-class SkuItem extends \yii\db\ActiveRecord
+class SkuItem extends ActiveRecord
 {
     /**
      * @inheritdoc

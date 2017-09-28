@@ -197,6 +197,8 @@ class PartnerController extends Controller
         }
 
         return $this->renderAjax('_select_store', [
+            'title' => '选择可用门店',
+            'label' => '可用门店',
             'store' => $store,
         ]);
     }
