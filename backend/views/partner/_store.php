@@ -141,6 +141,9 @@ VueAsset::register($this);
                     "data": "province_name",
                     "sName": "province_name",
                     "bSortable": false,
+                    "render": function(data, isDisplay, array) {
+                        return data + " " + array["city_name"] + " " + array["area_name"];
+                    },
                     "edit": {
                         "type": "vueInput",
                         "attributes": ['province_code', 'city_code', 'area_code', 'province_name', 'city_name', 'area_name']
