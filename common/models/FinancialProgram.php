@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\data\Pagination;
 
 /**
  * This is the model class for table "financial_program".
