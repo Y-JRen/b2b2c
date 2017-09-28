@@ -10,6 +10,7 @@ namespace backend\models\form;
 
 
 use common\logic\CarLogic;
+use common\logic\StoreLogic;
 use common\models\SkuItem;
 use common\models\SkuSpu;
 use common\models\SkuSpuCar;
@@ -135,6 +136,10 @@ class SpuForm extends SkuItem
                 $this->spuCarSave($spu);
                 $this->spuPartnerSave($spu);
             }
+
+            // 新增的时候同步合作商的门店信息
+            StoreLogic::instance()->synchronizedStoresToSup($this->id);
+
             $t->commit();
             
             return $this->id;

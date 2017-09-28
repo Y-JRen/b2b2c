@@ -19,6 +19,12 @@ use common\behaviors\TimestampBehavior;
 class PartnerSellerStore extends ActiveRecord
 {
     /**
+     * 是否自营门店状态说明
+     */
+    const IS_PARTNER_SELF_YES = 1; // 是
+    const IS_PARTNER_SELF_NO = 0;  // 否
+
+    /**
      * 定义行为
      *
      * @return array
@@ -61,5 +67,15 @@ class PartnerSellerStore extends ActiveRecord
             'store_id' => '门店id',
             'is_partner_self' => '是否是合作商自己的门店 0 - 不是 1 是',
         ];
+    }
+
+    /**
+     * 定义表的关联管理，查询合作商的门店信息
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStore()
+    {
+        return $this->hasOne(Store::className(), ['id' => 'store_id']);
     }
 }

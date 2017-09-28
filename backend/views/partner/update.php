@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = '更新商户';
 <div class="box-body">
     <div class="nav-tabs-custom">
         <!-- Tabs within a box -->
-        <ul class="nav nav-tabs pull-left" id="ul-div">
+        <ul class="nav nav-tabs" id="ul-div">
             <li class="active">
                 <a href="#basic-info" data-toggle="tab" aria-expanded="true">基本信息</a>
             </li>

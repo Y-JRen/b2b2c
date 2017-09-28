@@ -2,18 +2,16 @@
 
 namespace backend\controllers;
 
-use common\models\Partner;
 use Yii;
 use common\models\Store;
 use common\logic\AMapLogic;
-
-use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
+use common\logic\PartnerLogic;
 use yii\filters\VerbFilter;
-use backend\models\search\Store as StoreSearch;
 
 /**
  * StoreController implements the CRUD actions for Store model.
+ * 门店相关的一些相关的逻辑
  */
 class StoreController extends Controller
 {
@@ -23,6 +21,11 @@ class StoreController extends Controller
      */
     public $modelClass = 'common\models\Store';
 
+    /**
+     * 定义where 查询条件
+     * @param array $params
+     * @return array
+     */
     public function where($params)
     {
         return [
@@ -52,8 +55,7 @@ class StoreController extends Controller
     public function actionIndex()
     {
         // 查询合作商信息
-        $partner = Partner::find()->select(['id', 'name'])->all();
-        $partner = ArrayHelper::map($partner, 'id', 'name');
+        $partner = PartnerLogic::instance()->getPartnerMenu();
 
         return $this->render('index', [
             'partner' => $partner,
