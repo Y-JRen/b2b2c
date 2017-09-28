@@ -10,31 +10,28 @@ use common\widgets\vue\asset\VueAsset;
 /* @var $this yii\web\View */
 VueAsset::register($this);
 
-$this->title = '门店管理';
-$this->params['breadcrumbs'][] = $this->title;
-
 ?>
-<div class="store-index box box-primary">
-    <div class="box-header with-border">
-        <?= Html::a('新增门店', '#', ['class' => 'btn btn-success btn-flat', 'onclick' => 'm.create()']) ?>
-    </div>
-    <div class="box-body">
-        <?=MeTable::widget([
-            'table' => [
-                'class' => 'table table-bordered table-hover',
-            ],
-            'buttonsTemplate' => '',
-        ])?>
-    </div>
+
+<div class="box-header with-border">
+    <?= Html::a('新增门店', '#', ['class' => 'btn btn-success btn-flat', 'onclick' => 'mInfo.create()']) ?>
 </div>
-<?php $this->beginBlock('javascript'); ?>
+<div class="box-body">
+    <?=MeTable::widget([
+        'table' => [
+            'class' => 'table table-bordered table-hover',
+        ],
+        'buttonsTemplate' => '',
+    ])?>
+</div>
+
+<?php $this->beginBlock('javascript-store'); ?>
 <script>
     function handleEmpty(td, data) {
         $(td).html(data ? data : '--');
     }
 
     var objVue = null,
-    arrPartner = <?=\yii\helpers\Json::encode($partner)?>;
+        arrPartner = <?=\yii\helpers\Json::encode($partner)?>;
 
     mt.extend({
         // vue 按钮
@@ -77,20 +74,34 @@ $this->params['breadcrumbs'][] = $this->title;
             }
 
             return true;
+        },
+        "afterSave": function() {
+            if (mStore) mStore.ajax.reload();
+            return true;
         }
     });
 
-    var m = meTables({
+    var mInfo = meTables({
         title: "门店管理",
         searchType: "top",
         search: {render: false},
         bCheckbox: false,
         "bEvent": false,
+        params: {
+            // 合作商
+            "partner_id": <?=$model->id?>
+        },
+        operations: {
+            buttons: {
+                "see": {"bShow": false},
+                "delete": {"bShow": false}
+            }
+        },
         url: {
             "search": "<?=Url::toRoute(['store/search'])?>",
             "create": "<?=Url::toRoute(['store/create'])?>",
             "update": "<?=Url::toRoute(['store/update'])?>",
-            "delete": "<?=Url::toRoute(['store/delete'])?>",
+            "delete": "<?=Url::toRoute(['store/delete'])?>"
         },
         table: {
             "bLengthChange": false,
@@ -98,6 +109,7 @@ $this->params['breadcrumbs'][] = $this->title;
             "order": [],
             "aoColumns": [
                 {
+                    "isHide": true,
                     "title": "ID",
                     "data": "id",
                     "sName": "id",
@@ -105,6 +117,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     "edit": {"type": "hidden"}
                 },
                 {
+                    "isHide": true,
                     "title": "合作商",
                     "data": "partner_id",
                     "sName": "partner_id",
@@ -195,7 +208,7 @@ $this->params['breadcrumbs'][] = $this->title;
     });
 
     $(function(){
-        m.init();
+        mInfo.init();
 
         // 最后使用vue
         objVue = new Vue({
@@ -241,7 +254,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             // 获取经纬度信息
             $.ajax({
-                url: "<?=Url::toRoute(['get-address'])?>",
+                url: "<?=Url::toRoute(['store/get-address'])?>",
                 data: {
                     address: arrAddress.join("") + strAddress
                 },

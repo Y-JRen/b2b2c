@@ -1,17 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: liujinxing
- * Date: 2017/7/1
- * Time: 22:09
- */
 
 namespace common\traits;
 
-use yii;
+use Yii;
+use \yii\web\Response;
 
 /**
- * Trait Json
+ * Trait Json 处理json 返回
  * @author liujx
  * @package common\traits
  */
@@ -23,7 +18,7 @@ trait Json
      */
     protected $arrJson = [
         'errCode' => 201,
-        'errMsg'  => '',
+        'errMsg'  => '请求参数为空',
         'data'    => [],
     ];
 
@@ -39,12 +34,11 @@ trait Json
 
         // 没有错误信息使用code 确定错误信息
         if (empty($this->arrJson['errMsg'])) {
-            $errCode = Yii::t('error', 'errCode');
-            $this->arrJson['errMsg'] = $errCode[$this->arrJson['errCode']];
+            $this->arrJson['errMsg'] = '请求数据错误';
         }
 
         // 设置JSON返回
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        Yii::$app->response->format = Response::FORMAT_JSON;
         return $this->arrJson;
     }
 

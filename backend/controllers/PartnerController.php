@@ -3,18 +3,28 @@
 namespace backend\controllers;
 
 use backend\models\form\PartnerForm;
+use common\helpers\Helper;
+use common\logic\PartnerBaseIdentityLogic;
+use common\logic\PartnerLogic;
+use common\logic\StoreLogic;
+use common\models\DealerForm;
 use Yii;
 use common\models\Partner;
 use backend\models\search\Partner as PartnerSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\db\Query;
+use common\models\Store;
+use common\traits\Json;
 
 /**
  * PartnerController implements the CRUD actions for Partner model.
  */
 class PartnerController extends Controller
 {
+    use Json;
+
     /**
      * @inheritdoc
      */
@@ -98,10 +108,25 @@ class PartnerController extends Controller
                     Yii::$app->session->setFlash('error', $error[0]);
                 }
             }
+
+            // 查询基础的权限信息
+            $arrMenu = PartnerBaseIdentityLogic::instance()->getMenu();
+
             return $this->render('update', [
                 'model' => $model,
+                'menus' => $arrMenu,
             ]);
         }
+    }
+
+    /**
+     *
+     */
+    public function actionDealer()
+    {
+        return $this->render('_dealer', [
+            'model' => $model = new PartnerForm(),
+        ]);
     }
 
     /**
@@ -131,5 +156,98 @@ class PartnerController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    /**
+     * 获取合作商可用门店
+     */
+    public function actionGetStore()
+    {
+        // 合做商ID
+        $id = (int)Yii::$app->request->get('id');
+        $array = [];
+        if ($id) {
+            $array = (new Query())->select([
+                't.province_name', 't.city_name', 't.area_name',
+                't.address', 't.contact_person', 't.contact_phone',
+                't.name', 'p.is_partner_self',
+            ])->from('partner_seller_store p')
+                ->innerJoin('store t', '`t`.`id` = `p`.`store_id`')
+                ->where(['p.partner_id' => $id, 't.status' => Store::STATUS_ACTIVE])
+                ->all();
+        }
+
+        $this->asJson(['data' => $array]);
+    }
+
+
+    /**
+     * 显示商铺可以用的门店信息
+     *
+     * @return string
+     */
+    public function actionGetSelectStore()
+    {
+        // 合做商ID
+        $id = (int)Yii::$app->request->get('id');
+        $store = [];
+        if ($id) {
+            // 查询对外的门店(不是自己的)
+            $store = PartnerLogic::instance()->findCanChooseStore($id);
+        }
+
+        return $this->renderAjax('_select_store', [
+            'title' => '选择可用门店',
+            'label' => '可用门店',
+            'store' => $store,
+        ]);
+    }
+
+    /**
+     * 商户添加门店，其他门店的
+     *
+     * @return \yii\web\Response
+     */
+    public function actionCreateStore()
+    {
+        $request = Yii::$app->request;
+        $intStoreId = $request->post('store_id');
+        $intPartnerId = $request->post('partner_id');
+        if ($intStoreId && $intPartnerId) {
+            // 查询门店是否存在
+            $store = Store::findOne($intStoreId);
+            $this->arrJson['errMsg'] = '门店信息不存在';
+            if ($store && $store->partner_id != $intPartnerId) {
+                if (StoreLogic::instance()->createStorePartner($intStoreId, $intPartnerId, 0)) {
+                    $this->handleJson($store, 0, '添加成功');
+                } else {
+                    $this->arrJson['errMsg'] = '添加失败';
+                }
+            }
+        }
+
+        return $this->asJson($this->arrJson);
+    }
+
+    /**
+     * 商户添加和编辑厂商信息
+     *
+     * @return \yii\web\Response
+     */
+    public function actionUpdateDealer()
+    {
+        $model = new DealerForm();
+        // 加载数据并且验证
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $isTrue = PartnerLogic::instance()->updatePartnerFactory($model->partner_id, $model->dealer);
+            $this->arrJson['errMsg'] = '保存厂商信息失败';
+            if ($isTrue) {
+                $this->handleJson($model->dealer, 0, '保存成功');
+            }
+        } else {
+            $this->arrJson['errMsg'] = Helper::arrayToString($model->getErrors());
+        }
+
+        return $this->asJson($this->arrJson);
     }
 }

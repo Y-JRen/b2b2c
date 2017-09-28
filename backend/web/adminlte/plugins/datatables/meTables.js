@@ -48,7 +48,7 @@
                 if (options.ajaxRequest) {
                     this.options.table.ajax = {
                         url: null,
-                        type: self.options.sMethod,
+                        type: options.sMethod ? options.sMethod : self.options.sMethod,
                         dataType: "json",
                         data: function(d) {
                             var data = $(meTables.fn.options.searchForm).serializeArray(),request_params = [];
@@ -60,7 +60,7 @@
                             }
 
                             // 添加其他字段信息
-                            meTables.fn.push(request_params, self.options.params, "params");
+                            meTables.fn.push(request_params, options.params ? options.params : self.options.params, "params");
                             return request_params;
                         }
                     };

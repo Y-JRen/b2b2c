@@ -9,7 +9,6 @@
 namespace common\logic;
 
 
-use common\logic\Instance;
 use common\models\Area;
 use yii\helpers\ArrayHelper;
 
