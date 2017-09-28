@@ -61,7 +61,7 @@ class StoreLogic extends Instance
         $isReturn = false;
 
         // 第一步判断合作商和sup唯一ID是否存在
-        if (empty($intSpuId) || $intPartnerId) {
+        if (empty($intSpuId) || empty($intPartnerId)) {
             $arrItem = (new Query())->from('sku_item')->where(['id' => $intSupItemId])->one();
             if ($arrItem) {
                 $intSpuId = $arrItem['spu_id'];

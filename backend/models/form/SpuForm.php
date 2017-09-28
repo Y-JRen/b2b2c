@@ -138,7 +138,7 @@ class SpuForm extends SkuItem
             }
 
             // 新增的时候同步合作商的门店信息
-            StoreLogic::instance()->synchronizedStoresToSup($this->id);
+            StoreLogic::instance()->synchronizedStoresToSup($this->id, $this->spu_id, $this->partner_id);
 
             $t->commit();
             
