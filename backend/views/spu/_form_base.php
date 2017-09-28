@@ -3,70 +3,74 @@
 use yii\helpers\Html;
 use common\widgets\ActiveForm;
 
-$model->partner_id = \common\models\SkuSpuPartner::findOne(['spu_id' => $model->id])->partner_id;
-$spuCar = \common\models\SkuSpuCar::findOne(['spu_id' => $model->id]);
-$model->brand_id = $spuCar->brand_id;
-$model->factory_id = $spuCar->factory_id;
-$model->series_id = $spuCar->series_id;
-$model->car_id = $spuCar->car_type_id;
-
-
 /* @var $this yii\web\View */
 /* @var $model backend\models\form\SpuForm */
 /* @var $form common\widgets\ActiveForm */
 ?>
 
-<div class="col-md-9">
+<div class="col-md-12">
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
-            <li class=""><a href="#activity" data-toggle="tab" aria-expanded="false">基本信息</a></li>
+            <li class="active"><a href="#activity" data-toggle="tab" aria-expanded="true">基本信息</a></li>
             <li class=""><a href="#timeline" data-toggle="tab" aria-expanded="false">商品介绍</a></li>
-            <li class="active"><a href="#settings" data-toggle="tab" aria-expanded="true">提车地点</a></li>
+            <li class=""><a href="#settings" data-toggle="tab" aria-expanded="false">提车地点</a></li>
         </ul>
         <div class="tab-content">
-            <div class="tab-pane" id="activity">
-    <div class="spu-form-form">
-        <?php $form = ActiveForm::begin(); ?>
-        <div class="box-body table-responsive">
-            
-            <?= $form->field($model, 'partner_id')->widget(\kartik\select2\Select2::className(),[
-                'data' => \common\logic\PartnerLogic::instance()->getPartnerMenu(),
-                'options' => ['multiple' => false, 'placeholder' => '请选择'],
-                'maintainOrder' => true,
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'tags' => true,
-                ],
-            
-            ]) ?>
-            <?= $form->field($model, 'category')->dropDownList([
-                1 => '中规车',
-            ]) ?>
-            <?= $form->field($model, 'brand_id')->dropDownList(
-                \common\logic\CarLogic::instance()->getBrandMenu()
-            ) ?>
-            <?= $form->field($model, 'factory_id')->dropDownList(
-                \yii\helpers\ArrayHelper::map(\common\logic\CarLogic::instance()->geFactoryByBrandId($model->brand_id),
-                    'key', 'value'
-                )
-            ) ?>
-            <?= $form->field($model, 'series_id')->dropDownList(
-                \yii\helpers\ArrayHelper::map(\common\logic\CarLogic::instance()->getSeriesByFactoryId($model->factory_id),
-                    'key', 'value'
-                )
-            ) ?>
-            <?= $form->field($model, 'car_id')->dropDownList(
-                \yii\helpers\ArrayHelper::map(\common\logic\CarLogic::instance()->getCarBySeriesId($model->series_id),
-                    'key', 'value'
-                )
-            ) ?>
+            <div class="tab-pane active" id="activity">
+                <div class="spu-form-form">
+                    <?php $form = ActiveForm::begin(); ?>
+                    <div class="box-body table-responsive">
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label for="inputName" class="col-sm-3 control-label">所属商户:</label>
+    
+                                <div class="col-sm-9">
+                                    <p class="form-control" style="border: none">名字</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label for="inputName" class="col-sm-3 control-label">所属ID:</label>
+    
+                                <div class="col-sm-9">
+                                    <p class="form-control" style="border: none"><?=$model->partner_id?></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label for="inputName" class="col-sm-3 control-label">商品类型:</label>
 
-        </div>
-        <div class="box-footer">
-            <?= Html::submitButton('保存', ['class' => 'btn btn-success btn-flat']) ?>
-        </div>
-        <?php ActiveForm::end(); ?>
-    </div>
+                                <div class="col-sm-9">
+                                    <p class="form-control" style="border: none">
+                                        <?= \common\models\SkuSpuType::findOne($model->type_id)->name ?>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="form-group col-md-2">
+                                <p class="form-control" style="background: #d3d3d3"><?=$model->brand_name?></p>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <p class="form-control" style="background: #d3d3d3"><?=$model->brand_name?></p>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <p class="form-control" style="background: #d3d3d3"><?=$model->brand_name?></p>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <p class="form-control" style="background: #d3d3d3"><?=$model->brand_name?></p>
+                            </div>
+                        </div>
+            
+                    </div>
+                    <div class="box-footer">
+                        <?= Html::submitButton('保存', ['class' => 'btn btn-success btn-flat']) ?>
+                    </div>
+                    <?php ActiveForm::end(); ?>
+                </div>
 
 <?php
 
@@ -210,7 +214,7 @@ $this->registerJs($script);?>
             </div>
             <!-- /.tab-pane -->
 
-            <div class="tab-pane active" id="settings">
+            <div class="tab-pane" id="settings">
                 <form class="form-horizontal">
                     <div class="form-group">
                         <label for="inputName" class="col-sm-2 control-label">名字</label>

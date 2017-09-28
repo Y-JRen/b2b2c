@@ -18,8 +18,8 @@ class Spu extends SpuForm
     public function rules()
     {
         return [
-            [['id', 'type_id'], 'integer'],
-            [['create_time', 'update_time', 'name'], 'safe'],
+            [['id'], 'integer'],
+            [['create_time', 'name'], 'safe'],
         ];
     }
 
@@ -62,8 +62,6 @@ class Spu extends SpuForm
         $query->andFilterWhere([
             'id' => $this->id,
             'create_time' => $this->create_time,
-            'update_time' => $this->update_time,
-            'type_id' => $this->type_id,
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name]);

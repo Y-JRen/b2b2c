@@ -7,29 +7,38 @@ use common\widgets\GridView;
 /* @var $searchModel backend\models\search\Spu */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Spu Forms';
+$this->title = '商品管理';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="spu-form-index">
                 <?php echo $this->render('_search', ['model' => $searchModel]);  ?>     <div class="box-header with-border">
-        <?= Html::a('Create Spu Form', ['create'], ['class' => 'btn btn-success btn-flat']) ?>
+        <?= Html::a('新增商品', ['create'], ['class' => 'btn btn-success btn-flat']) ?>
     </div>
     <div class="box-body table-responsive no-padding">
 
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
-            'filterModel' => $searchModel,
             'layout' => "{items}\n{summary}\n{pager}",
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
-
-                'id',
-                'create_time',
-                'update_time',
+                [
+                    'label' => '商户名称',
+                    'value' => function($data) {
+                        return \common\models\Partner::findOne($data->partner_id)->name;
+                    }
+                ],
+                'spu_id',
                 'name',
-                'type_id',
-
-                ['class' => 'yii\grid\ActionColumn'],
+                'create_time',
+                [
+                    'label' => '操作',
+                    'format' => 'raw',
+                    'value' => function($data) {
+                        $html = Html::a('编辑', ['update', 'id' => $data->id]);
+                        $html .= Html::a('上架', ['update', 'id' => $data->id], ['style' => 'padding:0 5px;']);
+                        return $html;
+                    },
+                ],
             ],
         ]); ?>
     </div>

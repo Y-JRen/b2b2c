@@ -10,23 +10,22 @@ namespace backend\models\form;
 
 
 use common\logic\CarLogic;
+use common\models\SkuItem;
 use common\models\SkuSpu;
 use common\models\SkuSpuCar;
-use common\models\SkuSpuPartner;
 use yii\db\Exception;
 
 /**
  * Class SpuForm
+ *
  * @package backend\models\form
+ *
+ * @property SkuSpu spu
+ * @property SkuSpuCar spuCar
  */
-class SpuForm extends SkuSpu
+class SpuForm extends SkuItem
 {
-    /**
-     * 经销商ID
-     *
-     * @var int
-     */
-    public $partner_id;
+    public $type_id = 1;
     
     /**
      * 一级类目
@@ -36,6 +35,8 @@ class SpuForm extends SkuSpu
      * @var int
      */
     public $category = 1;
+    
+    public $category_name = '中规车';
     
     /**
      * 品牌
@@ -94,15 +95,23 @@ class SpuForm extends SkuSpu
         return parent::beforeValidate();
     }
     
+    /**
+     * label
+     *
+     * @return array
+     */
     public function attributeLabels()
     {
         return [
+            'spu_id' => '商品ID',
             'partner_id' => '经销商',
             'category' => '一级类目',
             'brand_id' => '品牌',
             'factory_id' => '厂商',
             'series_id' => '车系',
             'car_id' => '车型',
+            'name' => '商品名称',
+            'create_time' => '创建时间',
         ];
     }
     
@@ -114,14 +123,18 @@ class SpuForm extends SkuSpu
      */
     public function saveAll()
     {
-        if ($spuId = $this->checkSpu()) {
-            return $spuId;
+        if (!$this->validate()) {
+            return $this->errors;
         }
         $t = \Yii::$app->db->beginTransaction();
         try {
-            $this->spuSave();
-            $this->spuCarSave();
-            $this->spuPartnerSave();
+            if ($spu = $this->checkSpu()) {
+                $this->spuPartnerSave($spu);
+            } else {
+                $spu = $this->spuSave();
+                $this->spuCarSave($spu);
+                $this->spuPartnerSave($spu);
+            }
             $t->commit();
             
             return $this->id;
@@ -144,7 +157,7 @@ class SpuForm extends SkuSpu
             'series_id' => $this->series_id,
             'car_type_id' => $this->car_id,
         ])->one()) {
-            return $spu->spu_id;
+            return $spu;
         }
         
         return false;
@@ -153,28 +166,31 @@ class SpuForm extends SkuSpu
     /**
      * spu 基础信息保存
      *
-     * @return true
+     * @return SkuSpu
      * @throws Exception
      */
     public function spuSave()
     {
-        $this->create_time = date("Y-m-d H:i:s");
-        $this->name = date("Y-m-d H:i:s");
-        $this->create_time = date("Y-m-d H:i:s");
-        if (!$this->save()) {
-            throw new Exception('保存失败', $this->errors);
+        $spu = new SkuSpu();
+        $spu->name = $this->name;
+        $spu->type_id = $this->type_id;
+        $spu->create_time = date("Y-m-d H:i:s");
+        if (!$spu->save()) {
+            throw new Exception('保存失败', $spu->errors);
         }
         
-        return true;
+        return $spu;
     }
     
     /**
      * spu 车型
      *
+     * @param SkuSpu $spu
+     *
      * @return bool
      * @throws Exception
      */
-    public function spuCarSave()
+    public function spuCarSave($spu)
     {
         $carLogic = CarLogic::instance();
         $spuCar = new SkuSpuCar();
@@ -186,7 +202,7 @@ class SpuForm extends SkuSpu
         $spuCar->series_name = $carLogic->getSeriesName($this->series_id);
         $spuCar->car_type_id = $this->car_id;
         $spuCar->car_type_name = $carLogic->getCarName($this->car_id);
-        $spuCar->spu_id = $this->id;
+        $spuCar->spu_id = $spu->id;
         if (!$spuCar->save()) {
             throw new Exception('保存失败', $spuCar->errors);
         }
@@ -197,20 +213,59 @@ class SpuForm extends SkuSpu
     /**
      * spu 合作商
      *
+     * @param SkuSpu $spu
+     *
      * @return bool
      * @throws Exception
      */
-    public function spuPartnerSave()
+    public function spuPartnerSave($spu)
     {
-        $spuPartner = new SkuSpuPartner();
-        $spuPartner->spu_id = $this->id;
-        $spuPartner->partner_id = $this->partner_id;
-        $spuPartner->des = '';
-        $spuPartner->create_time = date("Y-m-d H:i:s");
-        if (!$spuPartner->save()) {
-            throw new Exception('保存失败', $spuPartner->errors);
+        $this->spu_id = $spu->id;
+        $this->des = '';
+        $this->create_time = date("Y-m-d H:i:s");
+        if (!$this->save()) {
+            throw new Exception('保存失败', $this->errors);
         }
         
         return true;
+    }
+    
+    /**
+     * spu-car
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSpuCar()
+    {
+        return $this->hasOne(SkuSpuCar::className(), ['spu_id' => 'spu_id']);
+    }
+    
+    
+    /**
+     * spu-partner
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSpu()
+    {
+        return $this->hasOne(SkuSpu::className(), ['id' => 'spu_id']);
+    }
+    
+    /**
+     * 关联表数据肤质成员变量
+     *
+     */
+    public function afterFind()
+    {
+        parent::afterFind();
+        $this->brand_id = $this->spuCar->brand_id;
+        $this->brand_name = $this->spuCar->brand_name;
+        $this->factory_id = $this->spuCar->factory_id;
+        $this->factory_name = $this->spuCar->factory_name;
+        $this->series_id = $this->spuCar->series_id;
+        $this->series_name = $this->spuCar->series_name;
+        $this->car_id = $this->spuCar->car_type_id;
+        $this->car_name = $this->spuCar->car_type_name;
+        $this->name = $this->spu->name;
     }
 }

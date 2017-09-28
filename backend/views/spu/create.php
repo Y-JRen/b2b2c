@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $model backend\models\form\SpuForm */
 
 $this->title = '新增商品';
-$this->params['breadcrumbs'][] = ['label' => 'Spu Forms', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => '商品管理', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="spu-form-create">

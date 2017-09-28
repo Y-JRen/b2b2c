@@ -24,12 +24,9 @@ use common\widgets\ActiveForm;
 
     <?= $form->field($model, 'create_time') ?>
 
-    <?= $form->field($model, 'update_time') ?>
 
     <?= $form->field($model, 'name')->label('商品名称') ?>
-
-    <?= $form->field($model, 'type_id') ?>
-
+    
 </div>
     <div class="box-footer">
         <div class="pull-right">
