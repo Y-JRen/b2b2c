@@ -3,8 +3,11 @@
 namespace backend\controllers;
 
 use backend\models\form\PartnerForm;
+use common\helpers\Helper;
 use common\logic\PartnerBaseIdentityLogic;
+use common\logic\PartnerLogic;
 use common\logic\StoreLogic;
+use common\models\DealerForm;
 use Yii;
 use common\models\Partner;
 use backend\models\search\Partner as PartnerSearch;
@@ -226,6 +229,28 @@ class PartnerController extends Controller
                     $this->arrJson['errMsg'] = '添加失败';
                 }
             }
+        }
+
+        return $this->asJson($this->arrJson);
+    }
+
+    /**
+     * 商户添加和编辑厂商信息
+     *
+     * @return \yii\web\Response
+     */
+    public function actionUpdateDealer()
+    {
+        $model = new DealerForm();
+        // 加载数据并且验证
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $isTrue = PartnerLogic::instance()->updatePartnerFactory($model->partner_id, $model->dealer);
+            $this->arrJson['errMsg'] = '保存厂商信息失败';
+            if ($isTrue) {
+                $this->handleJson($model->dealer, 0, '保存成功');
+            }
+        } else {
+            $this->arrJson['errMsg'] = Helper::arrayToString($model->getErrors());
         }
 
         return $this->asJson($this->arrJson);

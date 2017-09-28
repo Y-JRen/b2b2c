@@ -5,22 +5,27 @@ use common\widgets\ActiveForm;
 use yii\helpers\Url;
 use common\logic\CarLogic;
 use kartik\select2\Select2;
+use common\models\DealerForm;
 
-$intPartnerId = $model->id;
 
-$faceModel = new \common\models\DealerForm();
-$faceModel->dealer = [1, 2];
+
+$faceModel = new DealerForm();
+
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Partner */
 /* @var $form common\widgets\ActiveForm */
 
+$intPartnerId = $model->id;
+$faceModel->setPartnerId($intPartnerId);
 ?>
 
 <div class="partner-form">
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'id' => 'dealer-form-update'
+    ]); ?>
     <div class="box-body">
-
+        <?=$form->field($faceModel, 'partner_id')->hiddenInput()->label('', ['class' => 'hide'])?>
         <?= $form->field($faceModel, 'dealer')->widget(
             Select2::className(),
             [
@@ -48,20 +53,17 @@ $faceModel->dealer = [1, 2];
         </div>
     </div>
     <div class="box-footer">
-        <?= Html::submitButton('确定', ['class' => 'btn btn-success btn-flat']) ?>
-        <?= Html::a('取消', ['index'], ['class' => 'btn btn-default btn-flat']) ?>
+        <button type="button" class="btn btn-success btn-flat" id="submit-dealer">确定</button>
+        <?= Html::a('取消', ['partner/index'], ['class' => 'btn btn-default btn-flat']) ?>
     </div>
     <?php ActiveForm::end(); ?>
 </div>
 
-<div class="modal fade " id="store-info" tabindex="-1" role="dialog">
-</div>
+<!-- 弹出modal -->
+<div class="modal fade " id="store-info" tabindex="-1" role="dialog"></div>
 
 <?php $this->beginBlock('javascript-dealer') ?>
 <script>
-    // 多选优化
-    $(".select2").css("width", "100%").attr("data-placeholder", "请选择(多选)").select2();
-
     var mStore = $("#me-store-table").DataTable({
         "bPaginate": false,             // 不使用分页
         "bLengthChange": false,
@@ -147,5 +149,21 @@ $faceModel->dealer = [1, 2];
         }
     });
 
+    // 点击确定数据
+    $("#submit-dealer").click(function(){
+        $.ajax({
+            url: "<?=Url::toRoute(['partner/update-dealer'])?>",
+            type: "POST",
+            data: $("#dealer-form-update").serialize(),
+            dataType: "json"
+        }).done(function(json) {
+            layer.msg(json.errMsg, {icon: json.errCode === 0 ? 6 : 5});
+            if (json.errCode === 0) {
+
+            }
+        }).fail(function(){
+            layer.msg("服务器繁忙,请稍候再试...", {icon: 5});
+        });
+    });
 </script>
 <?php $this->endBlock(); ?>

@@ -74,6 +74,10 @@ VueAsset::register($this);
             }
 
             return true;
+        },
+        "afterSave": function() {
+            if (mStore) mStore.ajax.reload();
+            return true;
         }
     });
 
