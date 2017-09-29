@@ -8,16 +8,16 @@ use Yii;
  * This is the model class for table "sku_sku".
  *
  * @property string $id
- * @property string $price
+ * @property integer $price
  * @property integer $spu_id
  * @property string $name
  * @property string $subname
  * @property integer $partner_id
- * @property string $deposit
- * @property integer $spu_partner_id
+ * @property integer $deposit
+ * @property integer $item_id
  * @property string $des
- * @property string $sell_type
- * @property string $spu_type
+ * @property integer $item_type_id
+ * @property integer $spu_type_id
  * @property string $create_time
  * @property string $update_time
  * @property string $create_person
@@ -40,11 +40,11 @@ class SkuSku extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['price', 'spu_id', 'name', 'subname', 'partner_id', 'deposit', 'spu_partner_id', 'sell_type', 'spu_type', 'create_person', 'update_person'], 'required'],
-            [['price', 'spu_id', 'partner_id', 'deposit', 'spu_partner_id', 'status'], 'integer'],
+            [['price', 'spu_id', 'name', 'subname', 'partner_id', 'item_id', 'item_type_id', 'spu_type_id', 'create_person', 'update_person'], 'required'],
+            [['price', 'spu_id', 'partner_id', 'deposit', 'item_id', 'item_type_id', 'spu_type_id', 'status'], 'integer'],
             [['des'], 'string'],
             [['create_time', 'update_time'], 'safe'],
-            [['name', 'subname', 'sell_type', 'spu_type', 'create_person', 'update_person'], 'string', 'max' => 255],
+            [['name', 'subname', 'create_person', 'update_person'], 'string', 'max' => 255],
         ];
     }
 
@@ -54,22 +54,22 @@ class SkuSku extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'price' => 'Price',
-            'spu_id' => 'Spu ID',
-            'name' => 'Name',
-            'subname' => 'Subname',
-            'partner_id' => 'Partner ID',
-            'deposit' => 'Deposit',
-            'spu_partner_id' => 'Spu Partner ID',
-            'des' => 'Des',
-            'sell_type' => 'Sell Type',
-            'spu_type' => 'Spu Type',
+            'id' => '自增id',
+            'price' => '商品价格',
+            'spu_id' => '所属的spu',
+            'name' => '名称',
+            'subname' => '副标题名称',
+            'partner_id' => '所属合作商',
+            'deposit' => '订金',
+            'item_id' => 'spu+partner表的id',
+            'des' => '商品描述',
+            'item_type_id' => '销售方式，汽车类的有 normal 普通 lease 租赁两种方式',
+            'spu_type_id' => '冗余字段  spu的类型',
             'create_time' => 'Create Time',
             'update_time' => 'Update Time',
             'create_person' => 'Create Person',
             'update_person' => 'Update Person',
-            'status' => 'Status',
+            'status' => '状态 0 - 下架 1 上架',
         ];
     }
 }

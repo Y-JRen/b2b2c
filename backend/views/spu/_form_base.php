@@ -9,6 +9,7 @@ use common\widgets\ActiveForm;
 
 
 $color = json_decode(\common\logic\CarLogic::instance()->getColorByCarId($model->car_id), true);
+$guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->factory_price * 10000;
 ?>
 
 <div class="col-md-12">
@@ -79,8 +80,8 @@ $color = json_decode(\common\logic\CarLogic::instance()->getColorByCarId($model-
                                 <label for="inputName" class="col-sm-3 control-label">指导报价(元):</label>
 
                                 <div class="col-sm-9">
-                                    <p class="form-control" style="border: none">
-                                        <?= \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->factory_price * 10000 ?>
+                                    <p id="guide_price" title="" class="form-control" style="border: none">
+                                        <?=  $guidePrice?>
                                     </p>
                                 </div>
                             </div>
@@ -93,7 +94,7 @@ $color = json_decode(\common\logic\CarLogic::instance()->getColorByCarId($model-
                                 <div class="col-sm-4">
                                     <input type="hidden" id="spuitemform-color" class="form-control" name="SpuItemForm[sku]" aria-required="true">
                                     <div class="col-sm-5">
-                                        <select id="outer_color" class="form-control" name="outer_color" aria-required="true">
+                                        <select id="outer_color" class="form-control" aria-required="true">
                                             <option>请选择外色</option>
                                             <?php if(!empty($color[0])): ?>
                                             <?php foreach($color[0] as $value): ?>
@@ -103,7 +104,7 @@ $color = json_decode(\common\logic\CarLogic::instance()->getColorByCarId($model-
                                         </select>
                                     </div>
                                     <div class="col-sm-5">
-                                        <select id="inner_color" class="form-control" name="inner_color" aria-required="true">
+                                        <select id="inner_color" class="form-control" aria-required="true">
                                             <option>请选择内色</option>
                                             <?php if(!empty($color[1])): ?>
                                             <?php foreach ($color[1] as $value): ?>
@@ -115,25 +116,26 @@ $color = json_decode(\common\logic\CarLogic::instance()->getColorByCarId($model-
                                     <div class="col-sm-2">
                                         <a id="add_color" href="javascript:void(0)" class="btn btn-primary">添加</a>
                                     </div>
-                                    <div class="help-block"></div>
                                 </div>
                                 <br><br>
                                 <br><br>
-                                <div class="col-sm-offset-1 col-sm-6">
-                                <table class="table table-bordered">
-                                    <tbody>
-                                    <tr>
-                                        <th>外观颜色</th>
-                                        <th>内饰颜色</th>
-                                        <th>售价（元）（默认指导价）</th>
-                                        <th>自定义标题</th>
-                                        <th>操作</th>
-                                    </tr>
-                                    </tbody>
-                                    <tbody id="sku">
-                                    
-                                    </tbody>
-                                </table>
+                                <div class="col-sm-offset-1 col-sm-8">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <th>外观颜色</th>
+                                            <th>内饰颜色</th>
+                                            <th>售价（元）（默认指导价）</th>
+                                            <th>商品标题(必填)</th>
+                                            <th>自定义标题</th>
+                                            <th>商品副标题</th>
+                                        </tr>
+                                        </tbody>
+                                        <tbody id="sku">
+                                        
+                                        </tbody>
+                                    </table>
+                                    <div class="help-block"></div>
                                 </div>
                             </div>
                         </div>
@@ -142,7 +144,7 @@ $color = json_decode(\common\logic\CarLogic::instance()->getColorByCarId($model-
                                 \kartik\select2\Select2::className(),
                                 [
                                     'options' => ['multiple' => true, 'placeholder' => '请选择'],
-                                    'data' => []
+                                    'data' => \common\logic\FinancialLogic::instance()->getPartnerFinancial(1)
                                 ]
                         )->label('金融方案') ?>
     
@@ -203,22 +205,74 @@ $script = <<<_SCRIPT
         
         console.log(inner_color_value, outer_color_value);
         if(!inner_color_value) {
-            alert("请选择外观颜色内色！");
+            layer.msg("请选择外观颜色内色！");
             return false;
         }
         if(!outer_color_value) {
-            alert("请选择外观颜色外色！");
+            layer.msg("请选择外观颜色外色！");
             return false;
         }
-        html = '<tr><td>'+outer_color_label+'</td><td>'+inner_color_label+'</td><td><input class="form-control"></td><td><a href="javascript:void(0)" class="edit_sku">编辑</a></td><td><a href="javascript:void(0)" class="del_sku">删除</a></td></tr>';
+        skuVal = $("input[name='SpuItemForm[sku]']").val();
+        $("input[name='SpuItemForm[sku]']").val(skuVal++);
+        var html = '<tr>';
+        html += '<td><input name="SpuItemForm[sku]['+skuVal+'][outer_color]" value="'+outer_color_value+'" type="hidden">'+outer_color_label+ '</td>';
+        html += '<td><input name="SpuItemForm[sku]['+skuVal+'][inner_color]" value="'+inner_color_value+ '" type="hidden">'+inner_color_label+'</td>';
+        html +=  '<td><input name="SpuItemForm[sku]['+skuVal+'][price]" value="{$guidePrice}" class="form-control sku_price"></td>';
+        html +=  '<td><input name="SpuItemForm[sku]['+skuVal+'][name]" class="form-control sku_name"></td>';
+        html +=  '<td><input name="SpuItemForm[sku]['+skuVal+'][subname]" class="form-control"></td>';
+        html += '<td><a href="javascript:void(0)" class="del_sku">删除</a></td></tr>';
         
-        
+       
         $("#sku").append(html);
+       
     });
     
     $("body").delegate('.del_sku', "click",function(){
+        skuVal = $("input[name='SpuItemForm[sku]']").val();
+        $("input[name='SpuItemForm[sku]']").val(skuVal--)
         $(this).parent().parent().remove()
     });
+    
+    $(document).ready(
+    $('#w0').on('beforeSubmit', function(event, jqXHR, settings) {
+        $('.field-spuitemform-color input').blur(function(){
+             $('.field-spuitemform-color').removeClass('has-error');
+              $(".sku_name").removeClass('has-error');
+            $('.field-spuitemform-color').find('.help-block').html('');
+        });
+        $(".sku_name").each(function(){
+            $(this).parent().removeClass('has-error');
+            $('.field-spuitemform-color').find('.help-block').html('');
+            if(!$(this).val()){
+                $(this).parent().addClass('has-error');
+                $('.field-spuitemform-color').find('.help-block').html('<div style="color: red;">商品标题必填</div>');
+            }
+        });
+        if(!$("input[name='SpuItemForm[sku]']").val()) {
+            $('.field-spuitemform-color').removeClass('has-error');
+            $('.field-spuitemform-color').find('.help-block').html('');
+            if(!$(this).val()){
+                $('.field-spuitemform-color').addClass('has-error');
+                $('.field-spuitemform-color').find('.help-block').html('外观颜色必选')
+            }
+        }
+        var form = $(this);
+        if(form.find('.has-error').length) {
+            return false;
+        }
+
+        $.ajax({
+            url: form.attr('action'),
+            type: 'post',
+            data: form.serialize(),
+            success: function(data) {
+                // do something ...
+            }
+        });
+
+        return false;
+    }),
+);
     
     
 _SCRIPT;

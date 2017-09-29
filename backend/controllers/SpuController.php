@@ -89,9 +89,16 @@ class SpuController extends Controller
     public function actionUpdate($id)
     {
         $model = SpuItemForm::findOne($id);
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        $model->load(Yii::$app->request->post());
+        
+        if ($model->load(Yii::$app->request->post()) && $model->saveItem()) {
+            return $this->redirect(['update', 'id' => $model->id]);
         } else {
+            if ($model->errors) {
+                foreach ($model->errors as $error){
+                    Yii::$app->session->setFlash('error', $error[0]);
+                }
+            }
             return $this->render('update', [
                 'model' => $model,
             ]);
