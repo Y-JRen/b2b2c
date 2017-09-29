@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\form\SpuItemForm;
 use Yii;
 use backend\models\form\SpuForm;
 use backend\models\search\Spu;
@@ -87,7 +88,7 @@ class SpuController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        $model = SpuItemForm::findOne($id);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
