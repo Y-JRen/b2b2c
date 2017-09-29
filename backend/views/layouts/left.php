@@ -22,6 +22,17 @@
                             ['label' => 'Gii', 'icon' => 'circle-o', 'url' => ['/gii']],
                         ]
                     ],
+					
+					[
+                        'label' => '金融管理',
+                        'icon' => 'dashboard',
+                        'options' => ['class' => 'active treeview',],
+                        'items' => [
+                            ['label' => '金融方案', 'icon' => 'circle-o', 'url' => ['/financial/index']],
+                        ]
+                    ],
+					
+					
                     [
                         'label' => '商户管理',
                         'icon' => 'dashboard',

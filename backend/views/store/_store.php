@@ -71,7 +71,10 @@ VueAsset::register($this);
                     "title": "所在地区",
                     "data": "province_name",
                     "sName": "province_name",
-                    "bSortable": false
+                    "bSortable": false,
+                    "render": function(data, isDisplay, array) {
+                        return data + " " + array["city_name"] + " " + array["area_name"];
+                    }
                 },
                 {
                     "title": "门店地址",
