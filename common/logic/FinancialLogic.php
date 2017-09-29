@@ -19,6 +19,9 @@ class FinancialLogic extends Instance
 {
     public function getPartnerFinancial($partnerId)
     {
-        Fina
+        return [
+            1 => 'test',
+            2 => 'test2',
+        ];
     }
 }
