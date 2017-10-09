@@ -3,7 +3,6 @@ namespace frontend\modules\web\controllers;
 
 use frontend\controllers\BaseController;
 use frontend\logic\PartnerLogic;
-use Yii;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
