@@ -47,6 +47,19 @@ trait Redis
     }
 
     /**
+     * 设置缓存信息,并设置有效时间
+     * @param $key
+     * @param $value
+     * @param $time
+     * @return mixed
+     */
+    public function setCacheTime($key, $value, $time)
+    {
+        $key = self::$prefix.':'.$key;
+        return Yii::$app->redis->setex($key, Json::encode($value), $time);
+    }
+
+    /**
      * 删除缓存
      *
      * @param string $key 缓存的key

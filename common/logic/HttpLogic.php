@@ -14,11 +14,11 @@ class HttpLogic extends Instance
     /**
      * @param string $url 请求地址
      * @param array $options 请求配置信息
-     * @param bool $isToJson 是否转json 默认转换
      * @param bool $writeLog 是否写日志 默认 false
+     * @param bool $isToJson 是否转json 默认转换
      * @return mixed
      */
-    public static function curl_get_contents($url, $options = [], $isToJson = true, $writeLog = false)
+    public static function curl_get_contents($url, $options = [], $writeLog = false, $isToJson = true)
     {
         // 默认配置信息
         $default = [
@@ -73,29 +73,29 @@ class HttpLogic extends Instance
      * @param string $url 请求地址
      * @param array $params 请求参数
      * @param array $options 请求配置信息
-     * @param bool $isToJson 是否将结果转json
      * @param bool $writeLog 是否写日志 默认 false
+     * @param bool $isToJson 是否将结果转json
      * @return mixed
      */
-    public static function http_get($url, $params = [], $options = [], $isToJson = true, $writeLog = false)
+    public static function http_get($url, $params = [], $options = [], $writeLog = false, $isToJson = true)
     {
         $strParams = $params ? http_build_query($params) : '';
         $strParams = strpos($url, '?') ? $strParams : '?' . $strParams;
-        return self::curl_get_contents($url . $strParams, $options, $isToJson, $writeLog);
+        return self::curl_get_contents($url . $strParams, $options, $writeLog, $isToJson);
     }
 
     /**
      * @param string $url 请求地址
      * @param array $params 请求参数
      * @param array $options 请求配置信息
-     * @param bool $isToJson 是否将结果转json
      * @param bool $writeLog 是否写日志 默认 false
+     * @param bool $isToJson 是否将结果转json
      * @return mixed
      */
-    public static function http_post($url, $params = [], $options = [], $isToJson = true, $writeLog = false)
+    public static function http_post($url, $params = [], $options = [], $writeLog = false, $isToJson = true)
     {
         $options[CURLOPT_POST] = 1;
         $options[CURLOPT_POSTFIELDS] = http_build_query($params);
-        return self::curl_get_contents($url, $options, $isToJson, $writeLog);
+        return self::curl_get_contents($url, $options, $writeLog, $isToJson);
     }
 }

@@ -11,6 +11,14 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
+
+    // 定义的模块
+    'modules' => [
+        'web' => [
+            'class' => 'frontend\modules\web\web',
+        ],
+    ],
+
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
@@ -36,14 +44,14 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
+
+        // 路由配置
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
     ],
     'params' => $params,
 ];

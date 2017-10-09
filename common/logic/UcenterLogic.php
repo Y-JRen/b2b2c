@@ -24,8 +24,10 @@ class UcenterLogic extends Instance
     }
 
     /**
-     * @param $uid
-     * @param $token
+     * 验证用户是否已经登陆
+     *
+     * @param integer $uid 用户ID
+     * @param string $token 用户token
      * @return bool
      */
     public function checkLogin($uid, $token)
@@ -36,10 +38,11 @@ class UcenterLogic extends Instance
             'token' => $token,
             'tokenApi' => ArrayHelper::getValue($this->cfg, 'tokenApi'),
         ];
+
         $url = $this->cfg['domain'] . '/sso/user/check-login';
-        $jsonResult = HttpLogic::http_post($url, $post, [], true);
-        $arrResult = json_decode($jsonResult, true);
-        return (isset($arrResult['err_code']) && $arrResult['err_code'] == 0);//成功 失败
+        $arrResult = HttpLogic::http_post($url, $post, [], true);
+        // 成功失败
+        return (isset($arrResult['err_code']) && $arrResult['err_code'] == 0);
     }
 
 }
