@@ -137,6 +137,33 @@ class BaseController extends Controller
     }
 
     /**
+     * 获取分页请求的数据，和计算分页查询
+     *
+     * @return array 返回分页查询数据信息
+     * ```
+     * page 当前页
+     * size 每页条数
+     * offset 起始查询位置
+     * limit 查询条数
+     * ```
+     */
+    protected function getPageParams()
+    {
+        // 分页信息
+        $intPage = max(intval(ArrayHelper::getValue($this->privateParam, 'page')), 1);
+        $intSize = ArrayHelper::getValue($this->privateParam, 'page_size');
+        $intPageSize = $intSize > 0 ? $intSize : Yii::$app->params['pageSize'];
+
+        // 返回数据信息
+        return [
+            'page' => $intPage,
+            'size' => $intPageSize,
+            'offset' => ($intPage - 1) * $intPageSize,
+            'limit' => $intPageSize
+        ];
+    }
+
+    /**
      * 格式分页参数
      *
      * @param integer $intPage 第几页

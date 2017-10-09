@@ -16,13 +16,13 @@ class PartnerLogic extends \common\logic\PartnerLogic
 {
     // 说明 ： 0 表示不限 数值单位为万(价格区间)
     private $arrPriceInterval = [
-        ['minPrice' => 0, 'maxPrice' => 8, 'name' => '8万以下'],
-        ['minPrice' => 8, 'maxPrice' => 12, 'name' => '8 - 12万'],
-        ['minPrice' => 12, 'maxPrice' => 15, 'name' => '12 - 15万'],
-        ['minPrice' => 15, 'maxPrice' => 20, 'name' => '15 - 20万'],
-        ['minPrice' => 20, 'maxPrice' => 25, 'name' => '20 - 25万'],
-        ['minPrice' => 25, 'maxPrice' => 50, 'name' => '25 - 50万'],
-        ['minPrice' => 50, 'maxPrice' => 0, 'name' => '50万以上'],
+        ['min_price' => 0, 'max_price' => 8, 'name' => '8万以下'],
+        ['min_price' => 8, 'max_price' => 12, 'name' => '8 - 12万'],
+        ['min_price' => 12, 'max_price' => 15, 'name' => '12 - 15万'],
+        ['min_price' => 15, 'max_price' => 20, 'name' => '15 - 20万'],
+        ['min_price' => 20, 'max_price' => 25, 'name' => '20 - 25万'],
+        ['min_price' => 25, 'max_price' => 50, 'name' => '25 - 50万'],
+        ['min_price' => 50, 'max_price' => 0, 'name' => '50万以上'],
     ];
 
     /**
@@ -43,11 +43,13 @@ class PartnerLogic extends \common\logic\PartnerLogic
      * @return array|null|\yii\db\ActiveRecord
      */
     public function getPartnerInfo($id, $select = [
-        'name', 'address', 'logo',
+        'id', 'name', 'address', 'logo',
         'contact_person', 'contact_phone', 'description'
     ])
     {
-        return  Partner::find()->select($select)->where(['id' => $id])->asArray()->one();
+        $array = Partner::find()->select($select)->where(['id' => $id])->asArray()->one();
+        if ($array && isset($array['id'])) $array['id'] = (int)$array['id'];
+        return $array;
     }
 
     /**

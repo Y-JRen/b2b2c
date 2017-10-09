@@ -77,16 +77,10 @@ class PartnerController extends BaseController
     {
         // 验证请求参数(厂商ID不能为空)
         if (!empty($this->privateParam['partner_id'])) {
-            // 合作商ID
-            $intId = (int)$this->privateParam['partner_id'];
-            // 分页信息
-            $intPage = max(intval(ArrayHelper::getValue($this->privateParam, 'page')), 1);
-            $intPageSize = Yii::$app->params['pageSize'];
-
             // 默认查询条件
             $where = [
                 'and',
-                ['=', 'i.partner_id', $intId]
+                ['=', 'i.partner_id', (int)$this->privateParam['partner_id']]
             ];
 
             // 品牌
@@ -102,12 +96,12 @@ class PartnerController extends BaseController
             }
 
             // 价格区间 - 传入的单位为万，库里面存储的单位为分 需要* 1000000
-            $minPrice = ArrayHelper::getValue($this->privateParam, 'minPrice');
+            $minPrice = ArrayHelper::getValue($this->privateParam, 'min_price');
             if ($minPrice) {
                 $where[] = ['>', 'guide_price', $minPrice * 1000000];
             }
 
-            $maxPrice = ArrayHelper::getValue($this->privateParam, 'maxPrice');
+            $maxPrice = ArrayHelper::getValue($this->privateParam, 'max_price');
             if ($maxPrice) {
                 $where[] = ['<=', 'guide_price', $maxPrice * 1000000];
             }
@@ -123,7 +117,9 @@ class PartnerController extends BaseController
                 ->where($where);
 
             $total = (int)$query->count();
-            $lists = $query->all();
+            $pages = $this->getPageParams();
+            $lists = $query->offset($pages['offset'])->limit($pages['limit'])->all();
+
             if ($lists) {
                 foreach ($lists as &$value) {
                     $value['brand_id'] = (int)$value['brand_id'];
@@ -138,7 +134,7 @@ class PartnerController extends BaseController
             }
 
             // 格式化后返回
-            $array = $this->formatPageLists($lists, $intPage, $intPageSize, $total);
+            $array = $this->formatPageLists($lists, $pages['page'], $pages['size'], $total);
             $this->handleJson($array);
 
         } else {
