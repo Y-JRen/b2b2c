@@ -3,8 +3,7 @@
 namespace common\models;
 
 use Yii;
-use \yii\db\ActiveRecord;
-use common\behaviors\TimestampBehavior;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "sku_item".
@@ -19,23 +18,13 @@ use common\behaviors\TimestampBehavior;
  * @property string $name
  * @property string $subname
  * @property integer $deposit
- * @property string $spu_type_id
+ * @property integer $spu_type_id
+ * @property integer $item_type_id
+ * @property integer $down_payment
+ * @property integer $month_payment
  */
-class SkuItem extends ActiveRecord
+class SkuItem extends \yii\db\ActiveRecord
 {
-    /**
-     * 定义行为
-     *
-     * @return array
-     */
-    public function behaviors()
-    {
-        // 定义行为,自动维护 create_time 和 update_time 字段
-        return [
-            TimestampBehavior::className(),
-        ];
-    }
-
     /**
      * @inheritdoc
      */
@@ -50,11 +39,11 @@ class SkuItem extends ActiveRecord
     public function rules()
     {
         return [
-            [['spu_id', 'partner_id', 'des', 'status', 'spu_type_id'], 'required'],
-            [['spu_id', 'partner_id', 'status', 'deposit'], 'integer'],
+            [['spu_id', 'partner_id', 'status', 'spu_type_id', 'item_type_id', 'down_payment', 'month_payment'], 'required'],
+            [['spu_id', 'partner_id', 'status', 'deposit', 'spu_type_id', 'item_type_id', 'down_payment', 'month_payment'], 'integer'],
+            [['des'], 'string'],
             [['create_time', 'update_time'], 'safe'],
-            [['des', 'name', 'subname', 'spu_type_id'], 'string', 'max' => 255],
-            [['spu_id', 'partner_id'], 'unique', 'targetAttribute' => ['spu_id', 'partner_id'], 'message' => 'The combination of 商品ID and 合作商 has already been taken.'],
+            [['name', 'subname'], 'string', 'max' => 255],
         ];
     }
 
@@ -75,6 +64,26 @@ class SkuItem extends ActiveRecord
             'subname' => '商品副标题',
             'deposit' => '定金',
             'spu_type_id' => '冗余字段  spu的类型',
+            'item_type_id' => 'Item Type ID',
+            'down_payment' => '估算的首付',
+            'month_payment' => '估算的月供',
+        ];
+    }
+    
+    /**
+     * 时间行为
+     *
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'create_time',
+                'updatedAtAttribute' => 'update_time',
+                'value' => date("Y-m-d H:i:s"),
+            ]
         ];
     }
 }

@@ -8,7 +8,7 @@ use common\widgets\ActiveForm;
 /* @var $form common\widgets\ActiveForm */
 
 
-$color = json_decode(\common\logic\CarLogic::instance()->getColorByCarId($model->car_id), true);
+$color = \common\logic\SpuLogic::instance()->getSpuColorSelect($model->spu_id);
 $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->factory_price * 10000;
 ?>
 
@@ -93,26 +93,18 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
                                 <label class="control-label col-sm-1" for="spuitemform-color">外观颜色</label>
                                 <div class="col-sm-4">
                                     <input type="hidden" id="spuitemform-color" class="form-control" name="SpuItemForm[sku]" aria-required="true">
-                                    <div class="col-sm-5">
-                                        <select id="outer_color" class="form-control" aria-required="true">
-                                            <option>请选择外色</option>
-                                            <?php if(!empty($color[0])): ?>
-                                            <?php foreach($color[0] as $value): ?>
-                                                <option value="<?=$value['value']?>"><?=$value['label']?></option>
-                                            <?php endforeach;?>
-                                            <?php endif;?>
+                                    <?php foreach($color as $value): ?>
+                                    <div class="col-sm-5" id="<?=($value->name == "内色") ? 'inner' : 'outer' ;?>_color">
+                                        <input type="hidden" value="<?=$value->id?>" class="label_id">
+                                        <input type="hidden" value="<?=$value->name?>" class="label_name">
+                                        <select class="form-control" aria-required="true">
+                                            <option>请选择<?=$value->name?></option>
+                                                <?php foreach ($value->value as $v) :?>
+                                                    <option value="<?=$v->id?>"><?=$v->name?></option>
+                                                <?php endforeach;?>
                                         </select>
                                     </div>
-                                    <div class="col-sm-5">
-                                        <select id="inner_color" class="form-control" aria-required="true">
-                                            <option>请选择内色</option>
-                                            <?php if(!empty($color[1])): ?>
-                                            <?php foreach ($color[1] as $value): ?>
-                                                <option value="<?=$value['value']?>"><?=$value['label']?></option>
-                                            <?php endforeach;?>
-                                            <?php endif;?>
-                                        </select>
-                                    </div>
+                                    <?php endforeach;?>
                                     <div class="col-sm-2">
                                         <a id="add_color" href="javascript:void(0)" class="btn btn-primary">添加</a>
                                     </div>
@@ -197,26 +189,29 @@ $script = <<<_SCRIPT
     });
     
     $("#add_color").click(function(){
-        var inner_color_label = $('#inner_color option:selected').text()
-        var inner_color_value = $('#inner_color option:selected').attr('value')
+        var inner_color_label_id = $('#inner_color .label_id').val()
+        var inner_color_label_value = $('#inner_color .label_name').val()
+        var inner_color_value_id = $('#inner_color select option:selected').attr('value')
+        var inner_color_value_value = $('#inner_color select option:selected').text()
         
-        var outer_color_label = $('#outer_color option:selected').text()
-        var outer_color_value = $('#outer_color option:selected').attr('value')
+        var outer_color_label_id = $('#outer_color .label_id').val()
+        var outer_color_label_value = $('#outer_color .label_name').val()
+        var outer_color_value_id = $('#outer_color option:selected').attr('value')
+        var outer_color_value_value = $('#outer_color option:selected').text()
         
-        console.log(inner_color_value, outer_color_value);
-        if(!inner_color_value) {
+        if(!inner_color_value_value) {
             layer.msg("请选择外观颜色内色！");
             return false;
         }
-        if(!outer_color_value) {
+        if(!outer_color_value_value) {
             layer.msg("请选择外观颜色外色！");
             return false;
         }
         skuVal = $("input[name='SpuItemForm[sku]']").val();
         $("input[name='SpuItemForm[sku]']").val(skuVal++);
         var html = '<tr>';
-        html += '<td><input name="SpuItemForm[sku]['+skuVal+'][outer_color]" value="'+outer_color_value+'" type="hidden">'+outer_color_label+ '</td>';
-        html += '<td><input name="SpuItemForm[sku]['+skuVal+'][inner_color]" value="'+inner_color_value+ '" type="hidden">'+inner_color_label+'</td>';
+        html += '<td><input name="SpuItemForm[sku]['+skuVal+'][outer_color_label_id]" value="'+outer_color_label_id+'" type="hidden"><input name="SpuItemForm[sku]['+skuVal+'][outer_color_label_value]" value="'+outer_color_label_value+'" type="hidden"><input name="SpuItemForm[sku]['+skuVal+'][outer_color_value_id]" value="'+outer_color_value_id+'" type="hidden"><input name="SpuItemForm[sku]['+skuVal+'][outer_color_value_value]" value="'+outer_color_value_value+'" type="hidden">'+outer_color_value_value+ '</td>';
+        html += '<td><input name="SpuItemForm[sku]['+skuVal+'][inner_color_label_id]" value="'+inner_color_label_id+ '" type="hidden"><input name="SpuItemForm[sku]['+skuVal+'][inner_color_label_value]" value="'+inner_color_label_value+ '" type="hidden"><input name="SpuItemForm[sku]['+skuVal+'][inner_color_value_id]" value="'+inner_color_value_id+ '" type="hidden"><input name="SpuItemForm[sku]['+skuVal+'][inner_color_value_value]" value="'+inner_color_value_value+ '" type="hidden">'+inner_color_value_value+'</td>';
         html +=  '<td><input name="SpuItemForm[sku]['+skuVal+'][price]" value="{$guidePrice}" class="form-control sku_price"></td>';
         html +=  '<td><input name="SpuItemForm[sku]['+skuVal+'][name]" class="form-control sku_name"></td>';
         html +=  '<td><input name="SpuItemForm[sku]['+skuVal+'][subname]" class="form-control"></td>';

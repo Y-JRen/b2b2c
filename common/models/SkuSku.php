@@ -40,7 +40,7 @@ class SkuSku extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['price', 'spu_id', 'name', 'subname', 'partner_id', 'item_id', 'item_type_id', 'spu_type_id', 'create_person', 'update_person'], 'required'],
+            [['price', 'spu_id', 'name', 'partner_id', 'item_id', 'item_type_id', 'spu_type_id', 'create_person'], 'required'],
             [['price', 'spu_id', 'partner_id', 'deposit', 'item_id', 'item_type_id', 'spu_type_id', 'status'], 'integer'],
             [['des'], 'string'],
             [['create_time', 'update_time'], 'safe'],

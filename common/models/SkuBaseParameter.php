@@ -47,4 +47,9 @@ class SkuBaseParameter extends \yii\db\ActiveRecord
             'create_time' => 'Create Time',
         ];
     }
+    
+    public function getValue()
+    {
+        return $this->hasMany(SkuBaseParameterValue::className(), ['parameter_id' => 'id']);
+    }
 }

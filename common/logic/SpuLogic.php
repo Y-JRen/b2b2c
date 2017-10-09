@@ -26,15 +26,22 @@ class SpuLogic extends Instance
      *
      * @param $spuId
      * @param $carId
+     *
+     * @return bool
      */
     public function addSpuColor($spuId, $carId)
     {
+        //$spuId 已存在，不新增
+        if (SkuBaseParameter::find()->where(['spu_id' => $spuId])->one()) {
+            return true;
+        }
         $colors = CarBaseConfColor::find()->where(['car_id' => $carId])->all();
         foreach ($colors as $color)
         {
             $parameterLabel = $color->type ? '内色' : '外色';
             $this->addSkuBaseParameter($parameterLabel, $color->name, $spuId);
         }
+        return true;
     }
     
     /**
@@ -42,7 +49,7 @@ class SpuLogic extends Instance
      * @param $parameterValue
      * @param $spuId
      */
-    public function addSkuBaseParameter($parameterLabel, $parameterValue, $spuId)
+    private function addSkuBaseParameter($parameterLabel, $parameterValue, $spuId)
     {
         $t = \Yii::$app->db->beginTransaction();
         try{
@@ -63,8 +70,11 @@ class SpuLogic extends Instance
      * @return SkuBaseParameter
      * @throws Exception
      */
-    public function saveBaseParameter($parameterLabel, $spuId)
+    private function saveBaseParameter($parameterLabel, $spuId)
     {
+        if ($skuBaseParameter = SkuBaseParameter::find()->where(['spu_id' => $spuId, 'name' => $parameterLabel])->one()) {
+            return $skuBaseParameter;
+        }
         $skuBaseParameter = new SkuBaseParameter();
         $skuBaseParameter->spu_id = $spuId;
         $skuBaseParameter->name = $parameterLabel;
@@ -84,7 +94,7 @@ class SpuLogic extends Instance
      * @return SkuBaseParameterValue
      * @throws Exception
      */
-    public function saveBaseParameterValue($parameterValue, $parameterId)
+    private function saveBaseParameterValue($parameterValue, $parameterId)
     {
         $skuBaseParameterValue = new SkuBaseParameterValue();
         $skuBaseParameterValue->parameter_id = $parameterId;
@@ -96,5 +106,14 @@ class SpuLogic extends Instance
         return $skuBaseParameterValue;
     }
     
-    
+    /**
+     * @param $spuId
+     *
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function getSpuColorSelect($spuId)
+    {
+        $parameter = SkuBaseParameter::find()->where(['spu_id' => $spuId])->all();
+        return $parameter;
+    }
 }

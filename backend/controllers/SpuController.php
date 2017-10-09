@@ -91,9 +91,10 @@ class SpuController extends Controller
         $model = SpuItemForm::findOne($id);
         $model->load(Yii::$app->request->post());
         
-        if ($model->load(Yii::$app->request->post()) && $model->saveItem()) {
+        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->saveItem()) {
             return $this->redirect(['update', 'id' => $model->id]);
         } else {
+            //print_r($model);die;
             if ($model->errors) {
                 foreach ($model->errors as $error){
                     Yii::$app->session->setFlash('error', $error[0]);

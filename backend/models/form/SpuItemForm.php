@@ -72,8 +72,13 @@ class SpuItemForm extends SpuForm
             $this->addError($attribute, '参数格式错误');
         }
         foreach ($this->$attribute as $value) {
-            if (!isset($value['inner_color']) || !isset($value['outer_color'])) {
-                $this->addError($attribute, '参数错误');
+            if (!isset($value['outer_color_label_id']) || !isset($value['outer_color_label_value']) ||
+                !isset($value['outer_color_value_id']) || !isset($value['outer_color_value_value'])) {
+                $this->addError($attribute, '外色参数错误');
+            }
+            if (!isset($value['inner_color_label_id']) || !isset($value['inner_color_label_value']) ||
+                !isset($value['inner_color_value_id']) || !isset($value['inner_color_value_value'])) {
+                $this->addError($attribute, '内色参数错误');
             }
         }
     }
@@ -86,9 +91,6 @@ class SpuItemForm extends SpuForm
      */
     public function saveItem()
     {
-        if (!$this->validate()) {
-            return $this->errors;
-        }
         $t = \Yii::$app->db->beginTransaction();
         try{
             $this->saveFinancial();
@@ -117,19 +119,25 @@ class SpuItemForm extends SpuForm
                 $this->spu_id,
                 $financial,
                 $this->id,
+                $this->partner_id,
                 date("Y-m-d H:i:s")
             ];
         }
-        \Yii::$app->db->createCommand()->batchInsert(SkuItemFinancial::tableName(), [
-            'spu_id', 'financial_id', 'item_id', 'create_time'
-        ],$data);
+        $rst = \Yii::$app->db->createCommand()->batchInsert(SkuItemFinancial::tableName(), [
+            'spu_id', 'financial_id', 'item_id', 'partner_id', 'create_time'
+        ],$data)->execute();
+        if (!$rst) {
+            throw new Exception('添加失败！');
+        }
         return true;
     }
     
     /**
      * SKU 保存
+     * @TODO create_person
      *
      * @return bool
+     * @throws Exception
      */
     public function skuSave()
     {
@@ -145,12 +153,13 @@ class SpuItemForm extends SpuForm
             $sku->item_type_id = $this->type_id;
             $sku->spu_type_id = $this->spu_type_id;
             $sku->create_time = date("Y-m-d H:i:s");
-            $sku->create_person = '';
+            $sku->create_person = 'test';
             $sku->status = 1;
-            if ($sku->save()) {
-                $this->addSkuBaseParameter( $val['outer_color_label_id'], $val['outer_color_label_value'], $val['outer_color_value_id'], $val['outer_color_value_value'], $sku->id);
-                $this->addSkuBaseParameter( $val['inner_color_label_id'], $val['inner_color_label_value'], $val['inner_color_value_id'], $val['inner_color_value_value'], $sku->id);
+            if (!$sku->save()) {
+                throw new Exception(json_encode($sku->errors));
             }
+            $this->addSkuBaseParameter( $val['outer_color_label_id'], $val['outer_color_label_value'], $val['outer_color_value_id'], $val['outer_color_value_value'], $sku->id);
+            $this->addSkuBaseParameter( $val['inner_color_label_id'], $val['inner_color_label_value'], $val['inner_color_value_id'], $val['inner_color_value_value'], $sku->id);
         }
         return true;
     }

@@ -10,6 +10,7 @@ namespace backend\models\form;
 
 
 use common\logic\CarLogic;
+use common\logic\SpuLogic;
 use common\logic\StoreLogic;
 use common\models\SkuItem;
 use common\models\SkuSpu;
@@ -129,13 +130,11 @@ class SpuForm extends SkuItem
         }
         $t = \Yii::$app->db->beginTransaction();
         try {
-            if ($spu = $this->checkSpu()) {
-                $this->spuPartnerSave($spu);
-            } else {
+            //检查spu是否存在
+            if (!$spu = $this->checkSpu()) {
                 $spu = $this->spuSave();
-                $this->spuCarSave($spu);
-                $this->spuPartnerSave($spu);
             }
+            $this->spuPartnerSave($spu);
 
             // 新增的时候同步合作商的门店信息
             StoreLogic::instance()->synchronizedStoresToSkuItem($this->id, $this->spu_id, $this->partner_id);
@@ -183,12 +182,15 @@ class SpuForm extends SkuItem
         if (!$spu->save()) {
             throw new Exception('保存失败', $spu->errors);
         }
-        
+        // 同步车型内外色
+        SpuLogic::instance()->addSpuColor($spu->id, $this->car_id);
+        //spu车型基础信息
+        $this->spuCarSave($spu);
         return $spu;
     }
     
     /**
-     * spu 车型
+     * spu车型基础信息
      *
      * @param SkuSpu $spu
      *
