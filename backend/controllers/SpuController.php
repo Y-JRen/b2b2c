@@ -3,9 +3,15 @@
 namespace backend\controllers;
 
 use backend\models\form\SpuItemForm;
+use common\logic\SkuLogic;
+use common\logic\SpuLogic;
+use common\models\SkuItemStores;
+use common\models\SkuSku;
+use common\models\Store;
 use Yii;
 use backend\models\form\SpuForm;
 use backend\models\search\Spu;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -133,5 +139,38 @@ class SpuController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+    
+    /**
+     * 删除SKU
+     *
+     * @param $skuId
+     * @param $id
+     *
+     * @return \yii\web\Response
+     */
+    public function actionDeleteSku($skuId, $id)
+    {
+        $rst = SkuLogic::instance()->deleteSku($skuId);
+        if($rst) {
+            Yii::$app->session->setFlash('success', '删除成功');
+        } else {
+            Yii::$app->session->setFlash('error', '删除失败');
+        }
+        return $this->redirect(['update', 'id' => $id]);
+    }
+    
+    public function actionStore($id)
+    {
+        $query = Store::find()->alias('a')->innerJoin(SkuItemStores::tableName() .' as b',
+            'b.store_id = a.id'
+        )->andWhere([
+            'b.item_id' => $id
+        ]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
+        ]);
+        return $this->renderAjax('store', ['dataProvider' => $dataProvider]);
     }
 }

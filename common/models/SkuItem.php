@@ -71,7 +71,7 @@ class SkuItem extends \yii\db\ActiveRecord
     }
     
     /**
-     * 时间行为
+     * 行为
      *
      * @return array
      */
@@ -85,5 +85,13 @@ class SkuItem extends \yii\db\ActiveRecord
                 'value' => date("Y-m-d H:i:s"),
             ]
         ];
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSpuType()
+    {
+        return $this->hasOne(SkuSpuType::className(), ['id' => 'spu_type_id']);
     }
 }

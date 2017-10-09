@@ -30,17 +30,6 @@ class SpuForm extends SkuItem
     public $type_id = 1;
     
     /**
-     * 一级类目
-     * 1 - 中规车
-     * 2- 平行进口
-     *
-     * @var int
-     */
-    public $category = 1;
-    
-    public $category_name = '中规车';
-    
-    /**
      * 品牌
      *
      * @var int
@@ -78,8 +67,8 @@ class SpuForm extends SkuItem
     public function rules()
     {
         return [
-            [['partner_id', 'category', 'brand_id', 'factory_id', 'series_id', 'car_id'], 'required'],
-            [['partner_id', 'category', 'brand_id', 'factory_id', 'series_id', 'car_id'], 'integer'],
+            [['partner_id', 'brand_id', 'factory_id', 'series_id', 'car_id', 'spu_type_id', 'item_type_id'], 'required'],
+            [['partner_id', 'brand_id', 'factory_id', 'series_id', 'car_id'], 'integer'],
             ['name', 'string'],
             ['type_id', 'default', 'value' => 1],
         ];
@@ -114,6 +103,8 @@ class SpuForm extends SkuItem
             'car_id' => '车型',
             'name' => '商品名称',
             'create_time' => '创建时间',
+            'spu_type_id' => '一级类目',
+            'item_type_id' => '商品类型',
         ];
     }
     
@@ -273,6 +264,5 @@ class SpuForm extends SkuItem
         $this->series_name = $this->spuCar->series_name;
         $this->car_id = $this->spuCar->car_type_id;
         $this->car_name = $this->spuCar->car_type_name;
-        $this->name = $this->spu->name;
     }
 }

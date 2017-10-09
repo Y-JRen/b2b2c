@@ -8,12 +8,22 @@ use yii\helpers\Html;
 $this->title = '编辑基本信息: '.$model->name;
 $this->params['breadcrumbs'][] = ['label' => '商品管理', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = '更新';
+$this->params['breadcrumbs'][] = '编辑';
 ?>
 <div class="spu-form-update">
-
-    <?= $this->render('_form_base', [
-        'model' => $model,
-    ]) ?>
+    
+    <?php
+    if($model->item_type_id == 1) {
+        //普通车
+        echo $this->render('_form_base', [
+            'model' => $model,
+        ]) ;
+    } else {
+        //融资租凭
+        echo $this->render('_form_lease', [
+            'model' => $model,
+        ]) ;
+    }
+    ?>
 
 </div>

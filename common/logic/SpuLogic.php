@@ -11,7 +11,9 @@ namespace common\logic;
 use common\models\CarBaseConfColor;
 use common\models\SkuBaseParameter;
 use common\models\SkuBaseParameterValue;
+use common\models\SkuParameterAndValue;
 use yii\db\Exception;
+use yii\helpers\ArrayHelper;
 
 /**
  * Spu 相关逻辑
@@ -115,5 +117,21 @@ class SpuLogic extends Instance
     {
         $parameter = SkuBaseParameter::find()->where(['spu_id' => $spuId])->all();
         return $parameter;
+    }
+    
+    /**
+     * sku信息， 如内外色
+     *
+     * @param $skuId
+     *
+     * @return array
+     */
+    public function getParameter($skuId)
+    {
+        $param = SkuParameterAndValue::find()->where([
+            'sku_id' => $skuId
+        ])->all();
+        
+        return ArrayHelper::map($param, 'parameter_name', 'value_name');
     }
 }

@@ -15,8 +15,8 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
 <div class="nav-tabs-custom">
     <ul class="nav nav-tabs">
         <li class="active"><a href="#activity" data-toggle="tab" aria-expanded="true">基本信息</a></li>
-        <li class=""><a href="#introduce" data-toggle="tab" aria-expanded="false">商品介绍</a></li>
-        <li class=""><a href="#store" data-toggle="tab" aria-expanded="false">提车地点</a></li>
+        <li class=""><a href="#timeline" data-toggle="tab" aria-expanded="false">商品介绍</a></li>
+        <li class=""><a href="#settings" data-toggle="tab" aria-expanded="false">提车地点</a></li>
     </ul>
     <div class="tab-content">
         <div class="tab-pane active" id="activity">
@@ -160,29 +160,14 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
             </div>
         
         </div>
-
-        <div class="tab-pane" id="introduce">
-            <?=$this->render('_form_introduce', [
-                'model' => $model,
-            ]) ;?>
-        </div>
-
-        <div class="tab-pane active" id="store">
- 
-        </div>
     </div>
 </div>
 
 <?php
-$store_url = \yii\helpers\Url::to(['store', 'id' => $model->id]);
+
 $script = <<<_SCRIPT
 
-    $(".nav-tabs li a").click(function(){
-        if($(this).attr('href') == '#store') {
-            $.get('{$store_url}',function(html){
-                $('#store').html(html)
-            },'html');
-        }
+    $(".nav-tabs li").click(function(){
     });
     function changeValue(current, next, url) {
         

@@ -11,47 +11,12 @@ use common\widgets\ActiveForm;
 <div class="spu-form-form">
     <?php $form = ActiveForm::begin(); ?>
     <div class="box-body table-responsive">
-
-        <?= $form->field($model, 'partner_id')->widget(\kartik\select2\Select2::className(),[
-            'data' => \common\logic\PartnerLogic::instance()->getPartnerMenu(),
-            'options' => ['multiple' => false, 'placeholder' => '请选择'],
-            'maintainOrder' => true,
-            'pluginOptions' => [
-                'allowClear' => true,
-                'tags' => true,
-            ],
-
-        ]) ?>
-        <?= $form->field($model, 'item_type_id')->dropDownList(
-                \yii\helpers\ArrayHelper::map(
-                    \common\models\SkuItemType::find()->all(), 'id', 'name'
-                )
-        ) ?>
-
-        <?= $form->field($model, 'spu_type_id')->dropDownList(
-            \yii\helpers\ArrayHelper::map(
-                \common\models\SkuSpuType::find()->all(), 'id', 'name'
-            )
-        ) ?>
         
-        <?= $form->field($model, 'brand_id')->dropDownList(
-                \common\logic\CarLogic::instance()->getBrandMenu()
-        ) ?>
-        <?= $form->field($model, 'factory_id')->dropDownList(
-                \yii\helpers\ArrayHelper::map(\common\logic\CarLogic::instance()->geFactoryByBrandId($model->brand_id),
-                'key', 'value'
-                )
-        ) ?>
-        <?= $form->field($model, 'series_id')->dropDownList(
-            \yii\helpers\ArrayHelper::map(\common\logic\CarLogic::instance()->getSeriesByFactoryId($model->factory_id),
-                'key', 'value'
-            )
-        ) ?>
-        <?= $form->field($model, 'car_id')->dropDownList(
-            \yii\helpers\ArrayHelper::map(\common\logic\CarLogic::instance()->getCarBySeriesId($model->series_id),
-                'key', 'value'
-            )
-        ) ?>
+        <?= $form->field($model, 'name')->textInput() ?>
+        
+        <?= $form->field($model, 'subname')->textInput() ?>
+        
+        <?= $form->field($model, 'des')->textInput() ?>
 
     </div>
     <div class="box-footer">

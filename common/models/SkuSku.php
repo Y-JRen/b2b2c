@@ -72,4 +72,14 @@ class SkuSku extends \yii\db\ActiveRecord
             'status' => '状态 0 - 下架 1 上架',
         ];
     }
+    
+    /**
+     * sku信息 ，如：内外色
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getParameter()
+    {
+        return $this->hasMany(SkuParameterAndValue::className(), ['sku_id' => 'id']);
+    }
 }
