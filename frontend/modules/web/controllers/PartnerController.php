@@ -8,7 +8,7 @@ use yii\helpers\ArrayHelper;
 
 /**
  * Class PartnerController
- * 厂商处理控制器
+ * 合作商处理控制器
  * @package frontend\controllers
  */
 class PartnerController extends BaseController
@@ -42,7 +42,7 @@ class PartnerController extends BaseController
      *
      * @return mixed|string
      */
-    public function actionBrand()
+    public function actionBrands()
     {
         // 验证请求参数(厂商ID不能为空)
         if (!empty($this->privateParam['partner_id'])) {

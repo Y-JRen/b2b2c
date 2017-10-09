@@ -3,6 +3,7 @@
 namespace frontend\logic;
 
 use common\models\Partner;
+use Yii;
 use yii\db\Query;
 
 /**
@@ -14,16 +15,15 @@ use yii\db\Query;
  */
 class PartnerLogic extends \common\logic\PartnerLogic
 {
-    // 说明 ： 0 表示不限 数值单位为万(价格区间)
-    private $arrPriceInterval = [
-        ['min_price' => 0, 'max_price' => 8, 'name' => '8万以下'],
-        ['min_price' => 8, 'max_price' => 12, 'name' => '8 - 12万'],
-        ['min_price' => 12, 'max_price' => 15, 'name' => '12 - 15万'],
-        ['min_price' => 15, 'max_price' => 20, 'name' => '15 - 20万'],
-        ['min_price' => 20, 'max_price' => 25, 'name' => '20 - 25万'],
-        ['min_price' => 25, 'max_price' => 50, 'name' => '25 - 50万'],
-        ['min_price' => 50, 'max_price' => 0, 'name' => '50万以上'],
-    ];
+    /**
+     * @var array 价格区间
+     */
+    private $arrPriceInterval = [];
+
+    public function __construct()
+    {
+        $this->arrPriceInterval = Yii::$app->params['arrPriceInterval'];
+    }
 
     /**
      * 获取价格区间

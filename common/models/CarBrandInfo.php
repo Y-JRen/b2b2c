@@ -23,6 +23,12 @@ use Yii;
 class CarBrandInfo extends \yii\db\ActiveRecord
 {
     /**
+     * 是否使用中状态说明
+     */
+    const IS_USED_YES = 1; // 使用中
+    const IS_USER_NO = 0;   // 未使用
+
+    /**
      * @inheritdoc
      */
     public static function tableName()

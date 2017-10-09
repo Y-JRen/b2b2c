@@ -16,6 +16,7 @@ use common\models\CarBrandSonTypeInfo;
 use common\models\CarBrandTypeInfo;
 use common\models\CarFactoryInfo;
 use yii\helpers\ArrayHelper;
+use common\traits\Redis;
 
 /**
  * 品牌、厂商、车型、车系相关逻辑
@@ -25,7 +26,8 @@ use yii\helpers\ArrayHelper;
  */
 class CarLogic extends Instance
 {
-    
+    use Redis;
+
     /**
      * 根据品牌ID获取品牌名称
      *
@@ -301,5 +303,23 @@ class CarLogic extends Instance
             ];
         }
         return json_encode($data);
+    }
+
+    /**
+     * 获取品牌下的车系信息
+     *
+     * @param integer $intBrandId 品牌ID
+     * @return array|mixed|\yii\db\ActiveRecord[]
+     */
+    public function getSeriesByBrandId($intBrandId)
+    {
+        $key = 'car_brand_type_info:brand_id:'.$intBrandId;
+        $arrReturn = $this->getCache($key);
+        if (!$arrReturn) {
+            $arrReturn = CarBrandTypeInfo::find()->where(['car_brand_id' => $intBrandId])->asArray()->all();
+            if ($arrReturn) $this->setCache($key, $arrReturn);
+        }
+
+        return $arrReturn;
     }
 }
