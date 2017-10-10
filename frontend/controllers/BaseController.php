@@ -55,6 +55,11 @@ class BaseController extends Controller
     protected $privateParam = [];
 
     /**
+     * @var null 用户信息
+     */
+    protected $user = null;
+
+    /**
      * @return array 定义行为
      */
     public function behaviors()
@@ -115,16 +120,19 @@ class BaseController extends Controller
 
             // "token": "be025c89d4c03acd7046c925e25bd337",
             // "uid": 89220
-            $userInfo = $this->getCache($key);
-
-            if (!$userInfo) {
+            $this->user = $this->getCache($key);
+            if (empty($this->user)) {
                 // 缓存无效 去用户中心查询
-                if (!UcenterLogic::instance()->checkLogin($uid, $token)) {
-
-                } else {
-                    $userInfo = [];
+                $apiUser = UcenterLogic::instance();
+                // 用户登录成功，获取用户登录信息
+                if ($apiUser->checkLogin($uid, $token)) {
+                    $isReturn = true;
+                    // 获取用户登录信息
+                    $this->user = $apiUser->getUserInfo($token);
                     // 缓存有效时间10分钟
-                    $this->setCacheTime($key, $userInfo, Yii::$app->params['apiUserTokenTime']);
+                    if ($this->user) {
+                        $this->setCacheTime($key, $this->user, Yii::$app->params['apiUserTokenTime']);
+                    }
                 }
             } else {
                 $isReturn = true;
