@@ -98,7 +98,19 @@ class Upload extends InputWidget
     {
         VueAsset::register($this->getView());
         if($this->multiple) {
-        
+            $changeValue = '$("#'.$this->attribute.'")';
+            $key = $this->attribute;
+            $fileList = [];
+            if($this->model->$key) {
+                foreach ($this->model->$key as $v){
+                    $pathInfo = pathinfo($v);
+                    $fileList[] = [
+                        'name' => $pathInfo['basename'],
+                        'url' => $this->model->$key
+                    ];
+                }
+            }
+            $fileList = json_encode($fileList);
         } else {
             $changeValue = '$("#'.$this->attribute.'")';
             $key = $this->attribute;

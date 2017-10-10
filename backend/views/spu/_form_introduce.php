@@ -8,7 +8,7 @@ use common\widgets\ActiveForm;
 /* @var $form common\widgets\ActiveForm */
 /* @var $image_model \common\models\SkuItemAttachment */
 
-$model->images = \yii\helpers\ArrayHelper::getColumn(\common\models\SkuItemAttachment::findAll(['id' => $model->id]), 'url');
+$model->images = \yii\helpers\ArrayHelper::getColumn(\common\models\SkuItemAttachment::findAll(['item_id' => $model->id]), 'url');
 ?>
 
 <div class="spu-form-form">
@@ -25,7 +25,8 @@ $model->images = \yii\helpers\ArrayHelper::getColumn(\common\models\SkuItemAttac
             [
                 'uploadUrl' => \yii\helpers\Url::to(['/file-upload/item-image?id='.$model->id]),
                 'limit' => 10,
-                'deleteUrl' => \yii\helpers\Url::to(['/file-upload/del-item-image?id='.$model->id])
+                'deleteUrl' => \yii\helpers\Url::to(['/file-upload/del-item-image?id='.$model->id]),
+                'multiple' => true
             ]
         )->label('橱窗图') ?>
 
