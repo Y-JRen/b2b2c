@@ -12,7 +12,6 @@ namespace backend\models\form;
 use common\models\SkuItemFinancial;
 use common\models\SkuParameterAndValue;
 use common\models\SkuSku;
-use common\models\SkuSpu;
 use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 
@@ -26,6 +25,10 @@ use yii\helpers\ArrayHelper;
  */
 class SpuItemForm extends SpuForm
 {
+    const SCENARIO_SAVE_BASE = 'save_base';
+    const SCENARIO_SAVE_INTRODUCE = 'save_introduce';
+
+
     /**
      * sku信息
      *
@@ -39,17 +42,44 @@ class SpuItemForm extends SpuForm
      * @var array
      */
     public $item_financial;
+    /**
+     * 图片
+     * @var array
+     */
+    public $images;
     
     public function rules()
     {
         return [
-            [['sku', 'deposit', 'item_financial'], 'required'],
+            [['sku', 'deposit', 'item_financial'], 'required','on'=>[self::SCENARIO_SAVE_BASE]],
+            [['des'], 'required','on'=>[self::SCENARIO_SAVE_INTRODUCE]],
             ['deposit', 'integer'],
             ['sku', 'checkSku'],
-            ['item_financial', 'each', 'rule' => ['integer']]
+            ['item_financial', 'each', 'rule' => ['integer']],
+            ['images','each','rule' => ['string']]
         ];
     }
-    
+
+    public function scenarios()
+    {
+        return [
+            self::SCENARIO_SAVE_BASE => ['sku', 'deposit', 'item_financial'],
+            self::SCENARIO_SAVE_INTRODUCE => ['name','subname','images','des']
+        ];
+    }
+
+    public function beforeValidate()
+    {
+        switch ($this->getScenario()){
+            case self::SCENARIO_SAVE_INTRODUCE:
+                break;
+            default:
+                parent::beforeValidate();
+                break;
+        }
+    }
+
+
     /**
      * label 信息
      *
@@ -93,6 +123,22 @@ class SpuItemForm extends SpuForm
      * @throws Exception
      */
     public function saveItem()
+    {
+        $res = false;
+        switch ($this->getScenario()){
+            case self::SCENARIO_SAVE_BASE:
+                $res = $this->saveBase();
+                break;
+            case self::SCENARIO_SAVE_INTRODUCE:
+                $res = $this->saveIntroduce();
+                break;
+            default:
+                break;
+        }
+        return $res;
+    }
+
+    public function saveBase()
     {
         $t = \Yii::$app->db->beginTransaction();
         try{
@@ -228,5 +274,26 @@ class SpuItemForm extends SpuForm
     public function getSkuDetail()
     {
         return $this->hasMany(SkuSku::className(), ['spu_id' => 'spu_id']);
+    }
+
+    public function saveIntroduce()
+    {
+        $t = \Yii::$app->db->beginTransaction();
+        try{
+            $this->save();
+            //$this->saveAttachment();
+            $t->commit();
+        } catch (Exception $e){
+            $t->rollBack();
+            throw $e;
+        }
+        return true;
+    }
+
+    public function saveAttachment()
+    {
+       foreach($this->images as $v){
+
+       }
     }
 }

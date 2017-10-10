@@ -22,6 +22,7 @@ use yii\behaviors\TimestampBehavior;
  * @property integer $item_type_id
  * @property integer $down_payment
  * @property integer $month_payment
+ * @property string $image
  */
 class SkuItem extends \yii\db\ActiveRecord
 {
@@ -41,7 +42,7 @@ class SkuItem extends \yii\db\ActiveRecord
         return [
             [['spu_id', 'partner_id', 'status', 'spu_type_id', 'item_type_id', 'down_payment', 'month_payment'], 'required'],
             [['spu_id', 'partner_id', 'status', 'deposit', 'spu_type_id', 'item_type_id', 'down_payment', 'month_payment'], 'integer'],
-            [['des'], 'string'],
+            [['des','image'], 'string'],
             [['create_time', 'update_time'], 'safe'],
             [['name', 'subname'], 'string', 'max' => 255],
         ];

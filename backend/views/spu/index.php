@@ -11,7 +11,8 @@ $this->title = '商品管理';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="spu-form-index">
-                <?php echo $this->render('_search', ['model' => $searchModel]);  ?>     <div class="box-header with-border">
+    <?php echo $this->render('_search', ['model' => $searchModel]);  ?>
+    <div class="box-header with-border">
         <?= Html::a('新增商品', ['create'], ['class' => 'btn btn-success btn-flat']) ?>
     </div>
     <div class="box-body table-responsive no-padding">

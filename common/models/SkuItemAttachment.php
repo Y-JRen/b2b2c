@@ -33,7 +33,7 @@ class SkuItemAttachment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'item_id', 'type', 'url', 'status', 'spu_id', 'partner_id', 'create_person'], 'required'],
+            [['item_id', 'type', 'url', 'status', 'spu_id', 'partner_id', 'create_person'], 'required'],
             [['id', 'item_id', 'status', 'spu_id', 'partner_id'], 'integer'],
             [['create_time'], 'safe'],
             [['type', 'url', 'create_person'], 'string', 'max' => 255],

@@ -4,9 +4,9 @@ namespace backend\controllers;
 
 use backend\models\form\SpuItemForm;
 use common\logic\SkuLogic;
-use common\logic\SpuLogic;
+use common\models\SkuItemAttachment;
+use common\models\SkuItemFinancialLease;
 use common\models\SkuItemStores;
-use common\models\SkuSku;
 use common\models\Store;
 use Yii;
 use backend\models\form\SpuForm;
@@ -33,6 +33,16 @@ class SpuController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+        ];
+    }
+
+
+    public function actions()
+    {
+        return [
+            'upload' => [
+                'class' => 'kucha\ueditor\UEditorAction',//TODO 继承重写（文件存阿里云）
+            ]
         ];
     }
 
@@ -95,8 +105,12 @@ class SpuController extends Controller
     public function actionUpdate($id)
     {
         $model = SpuItemForm::findOne($id);
-        $model->load(Yii::$app->request->post());
-        
+        $fm = Yii::$app->request->post('fm');
+        if($fm == 'introduce'){
+            $model->setScenario($model::SCENARIO_SAVE_INTRODUCE);
+        }else{
+            $model->setScenario($model::SCENARIO_SAVE_BASE);
+        }
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->saveItem()) {
             return $this->redirect(['update', 'id' => $model->id]);
         } else {
@@ -106,8 +120,10 @@ class SpuController extends Controller
                     Yii::$app->session->setFlash('error', $error[0]);
                 }
             }
+            $image_model = SkuItemAttachment::find()->where(['item_id'=>$id])->all();
             return $this->render('update', [
                 'model' => $model,
+                'image_model' => $image_model,
             ]);
         }
     }
@@ -160,6 +176,13 @@ class SpuController extends Controller
         return $this->redirect(['update', 'id' => $id]);
     }
     
+    /**
+     * 提车地点
+     *
+     * @param $id
+     *
+     * @return string
+     */
     public function actionStore($id)
     {
         $query = Store::find()->alias('a')->innerJoin(SkuItemStores::tableName() .' as b',
@@ -172,5 +195,22 @@ class SpuController extends Controller
             'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
         ]);
         return $this->renderAjax('store', ['dataProvider' => $dataProvider]);
+    }
+    
+    /**
+     * 融资租凭 金融方案
+     *
+     * @param $id
+     *
+     * @return string
+     */
+    public function actionFinancialLease($id)
+    {
+        $query = SkuItemFinancialLease::find()->where(['item_id' => $id]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
+        ]);
+        return $this->renderAjax('lease', ['dataProvider' => $dataProvider]);
     }
 }

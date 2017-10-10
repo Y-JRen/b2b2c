@@ -57,6 +57,7 @@ class Upload extends InputWidget
         if(!$this->uploadUrl) {
             throw new InvalidConfigException('未指定上传图片');
         }
+        $this->deleteUrl = strpos($this->deleteUrl,'?') > 0 ? $this->deleteUrl : $this->deleteUrl.'?';
     }
     
     /**
@@ -97,7 +98,19 @@ class Upload extends InputWidget
     {
         VueAsset::register($this->getView());
         if($this->multiple) {
-        
+            $changeValue = '$("#'.$this->attribute.'")';
+            $key = $this->attribute;
+            $fileList = [];
+            if($this->model->$key) {
+                foreach ($this->model->$key as $v){
+                    $pathInfo = pathinfo($v);
+                    $fileList[] = [
+                        'name' => $pathInfo['basename'],
+                        'url' => $this->model->$key
+                    ];
+                }
+            }
+            $fileList = json_encode($fileList);
         } else {
             $changeValue = '$("#'.$this->attribute.'")';
             $key = $this->attribute;
@@ -125,7 +138,7 @@ vue = new Vue({
         handleRemove(file, fileList) {
             console.log(file, fileList);
             {$changeValue}.val('')
-            $.get('{$this->deleteUrl}?url='+file.response)
+            $.get('{$this->deleteUrl}&url='+file.response)
             this.count--
         },
         handleSuccess(response, file, fileList) {

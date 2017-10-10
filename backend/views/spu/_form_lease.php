@@ -119,6 +119,7 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
                                         <th>售价（元）（默认指导价）</th>
                                         <th>商品标题(必填)</th>
                                         <th>自定义标题</th>
+                                        <th>金融方案</th>
                                         <th>操作</th>
                                     </tr>
                                     </tbody>
@@ -164,10 +165,16 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
 </div>
 
 <?php
-
+$store_url = \yii\helpers\Url::to(['store', 'id' => $model->id]);
+$add_lease_url = \yii\helpers\Url::to(['financial-lease', 'id' => $model->id]);
 $script = <<<_SCRIPT
 
     $(".nav-tabs li").click(function(){
+        if($(this).attr('href') == '#store') {
+            $.get('{$store_url}',function(html){
+                $('#store').html(html)
+            },'html');
+        }
     });
     function changeValue(current, next, url) {
         
@@ -232,6 +239,7 @@ $script = <<<_SCRIPT
         html +=  '<td><input name="SpuItemForm[sku]['+skuVal+'][price]" value="{$guidePrice}" class="form-control sku_price"></td>';
         html +=  '<td><input name="SpuItemForm[sku]['+skuVal+'][name]" class="form-control sku_name"></td>';
         html +=  '<td><input name="SpuItemForm[sku]['+skuVal+'][subname]" class="form-control"></td>';
+        html +=  '<td><a href="javascript:void(0)" class="add_lease">编辑</a></td>';
         html += '<td><a href="javascript:void(0)" class="del_sku">删除</a></td></tr>';
         
        
@@ -243,6 +251,18 @@ $script = <<<_SCRIPT
         skuVal = $("input[name='SpuItemForm[sku]']").val();
         $("input[name='SpuItemForm[sku]']").val(skuVal--)
         $(this).parent().parent().remove()
+    });
+    
+    $("body").delegate('.add_lease', "click",function(){
+        $.get('{$add_lease_url}', function(html){
+            layer.open({
+              title: '编辑金融方案',
+              type: 1,
+              skin: 'layui-layer-rim', //加上边框
+              area: ['60%', '60%'], //宽高
+              content: html
+            });
+        }, 'html');
     });
     
     $(document).ready(
