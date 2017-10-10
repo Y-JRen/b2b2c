@@ -19,8 +19,9 @@ use yii\web\AssetBundle;
  */
 class VueAsset extends AssetBundle
 {
+    public $baseUrl = '/asset/dist/';
     public function init(){
-        $this->sourcePath = __DIR__ . '/';
+        $this->sourcePath = __DIR__ . '/dist/';
         parent::init();
     }
     
@@ -28,15 +29,15 @@ class VueAsset extends AssetBundle
      * @var array
      */
     public $css = [
-        'https://unpkg.com/element-ui/lib/theme-default/index.css'
+        'css/index.css'
     ];
     
     /**
      * @var array
      */
     public $js = [
-        'https://unpkg.com/vue/dist/vue.js',
-        'https://unpkg.com/element-ui/lib/index.js',
+        'js/vue.js',
+        'js/index.js',
     ];
     
     public $depends = [

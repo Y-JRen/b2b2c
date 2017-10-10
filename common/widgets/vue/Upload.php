@@ -66,19 +66,21 @@ class Upload extends InputWidget
     public function run()
     {
         $this->registerClientScript();
-        $content = Html::beginTag('div', ['class' => 'hidden']);
-        $key = $this->attribute;
-        $content .= Html::hiddenInput(Html::getInputName($this->model, $this->attribute),
-            $this->model->$key,['id' => $this->attribute]);
-        
-        $content .= Html::endTag('div');
-        $content .= Html::beginTag('div', ['id' => 'vueUpload']);
+        $content = Html::beginTag('div', ['id' => 'vueUpload']);
+        $name = Html::getInputName($this->model, $this->attribute);
+        if ($this->multiple) {
+            $content .= '<input v-for="(item, index) in fileList" name="'.$name.'[${index}]" type="hidden" v-model="item.url">';
+        } else {
+            $content .= '<input v-for="item in fileList" name="'.$name.'" type="hidden" v-model="item.url">';
+    
+        }
         $content .= ' <el-upload
-  class="upload-demo"
+  class="upload"
   action="'.$this->uploadUrl.'"
   name="pics"
   :on-success="handleSuccess"
   :on-remove="handleRemove"
+  :on-change="handleChange"
   :before-upload="beforeAvatarUpload"
   :file-list="fileList"
   :multiple=false
@@ -98,7 +100,6 @@ class Upload extends InputWidget
     {
         VueAsset::register($this->getView());
         if($this->multiple) {
-            $changeValue = '$("#'.$this->attribute.'")';
             $key = $this->attribute;
             $fileList = [];
             if($this->model->$key) {
@@ -106,13 +107,13 @@ class Upload extends InputWidget
                     $pathInfo = pathinfo($v);
                     $fileList[] = [
                         'name' => $pathInfo['basename'],
-                        'url' => $this->model->$key
+                        'url' => $v
                     ];
                 }
             }
+            $count = count($fileList) ? : 0;
             $fileList = json_encode($fileList);
         } else {
-            $changeValue = '$("#'.$this->attribute.'")';
             $key = $this->attribute;
             $fileList = [];
             if($this->model->$key) {
@@ -122,28 +123,34 @@ class Upload extends InputWidget
                     'url' => $this->model->$key
                 ];
             }
+            $count = count($fileList) ? : 0;
             $fileList = json_encode($fileList);
         }
         $errorMessage = '$message';
         $js = <<<__SCRIPT
-vue = new Vue({
+var vue = new Vue({
     el: '#vueUpload',
     data: function () {
         return {
             fileList: {$fileList},
-            count: 0
+            count: {$count}
         };
     },
     methods: {
         handleRemove(file, fileList) {
-            console.log(file, fileList);
-            {$changeValue}.val('')
+            //vue.fileList.splice(fileList.length)
             $.get('{$this->deleteUrl}&url='+file.response)
             this.count--
         },
         handleSuccess(response, file, fileList) {
-            {$changeValue}.val(response)
+            console.log(fileList)
+            //vue.fileList.splice(fileList.length)
             this.count++
+        },
+        handleChange(file, fileList) {
+            if(fileList.length > 1 ) {
+                vue.fileList.splice(fileList.length)
+            }
         },
         beforeAvatarUpload(file) {
             const maxSize = file.size / 1024  < {$this->maxSize};
