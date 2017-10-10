@@ -5,6 +5,7 @@ namespace backend\controllers;
 use backend\models\form\SpuItemForm;
 use common\logic\SkuLogic;
 use common\logic\SpuLogic;
+use common\models\SkuItemAttachment;
 use common\models\SkuItemStores;
 use common\models\SkuSku;
 use common\models\Store;
@@ -33,6 +34,16 @@ class SpuController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+        ];
+    }
+
+
+    public function actions()
+    {
+        return [
+            'upload' => [
+                'class' => 'kucha\ueditor\UEditorAction',//TODO 继承重写（文件存阿里云）
+            ]
         ];
     }
 
@@ -95,8 +106,12 @@ class SpuController extends Controller
     public function actionUpdate($id)
     {
         $model = SpuItemForm::findOne($id);
-        $model->load(Yii::$app->request->post());
-        
+        $fm = Yii::$app->request->post('fm');
+        if($fm == 'introduce'){
+            $model->setScenario($model::SCENARIO_SAVE_INTRODUCE);
+        }else{
+            $model->setScenario($model::SCENARIO_SAVE_BASE);
+        }
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->saveItem()) {
             return $this->redirect(['update', 'id' => $model->id]);
         } else {
@@ -106,8 +121,10 @@ class SpuController extends Controller
                     Yii::$app->session->setFlash('error', $error[0]);
                 }
             }
+            $image_model = SkuItemAttachment::find()->where(['item_id'=>$id])->all();
             return $this->render('update', [
                 'model' => $model,
+                'image_model' => $image_model,
             ]);
         }
     }

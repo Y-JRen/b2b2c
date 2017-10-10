@@ -6,6 +6,7 @@ use common\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model backend\models\form\SpuForm */
 /* @var $form common\widgets\ActiveForm */
+/* @var $image_model \common\models\SkuItemAttachment */
 
 
 $color = \common\logic\SpuLogic::instance()->getSpuColorSelect($model->spu_id);
@@ -164,6 +165,7 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
         <div class="tab-pane" id="introduce">
             <?=$this->render('_form_introduce', [
                 'model' => $model,
+                'image_model' => $image_model,
             ]) ;?>
         </div>
 
