@@ -3,6 +3,7 @@
 namespace common\traits;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 use \yii\web\Response;
 
 /**
@@ -17,8 +18,8 @@ trait Json
      * @var array
      */
     protected $arrJson = [
-        'errCode' => 201,
-        'errMsg'  => '请求参数为空',
+        'errCode' => 1001,
+        'errMsg'  => '',
         'data'    => [],
     ];
 
@@ -34,7 +35,12 @@ trait Json
 
         // 没有错误信息使用code 确定错误信息
         if (empty($this->arrJson['errMsg'])) {
-            $this->arrJson['errMsg'] = '请求数据错误';
+            $arrErrorInfo = ArrayHelper::getValue(Yii::$app->params, 'arrApiErrorInfo');
+            if (isset($arrErrorInfo[$this->arrJson['errCode']])) {
+                $this->arrJson['errMsg'] = $arrErrorInfo[$this->arrJson['errCode']];
+            } else {
+                $this->arrJson['errMsg'] = '请求数据错误';
+            }
         }
 
         // 设置JSON返回

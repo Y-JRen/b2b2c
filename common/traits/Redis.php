@@ -3,7 +3,6 @@
 namespace common\traits;
 
 use Yii;
-use yii\helpers\Json;
 
 /**
  * Trait Redis redis 处理相关的功能，不使用yii-cache
@@ -27,7 +26,7 @@ trait Redis
         $key = self::$prefix.':'.$key;
         $mixReturn = Yii::$app->redis->get($key);
         if ($mixReturn) {
-            $mixReturn = Json::decode($mixReturn);
+            $mixReturn = yii\helpers\Json::decode($mixReturn);
         }
 
         return $mixReturn;
@@ -43,7 +42,7 @@ trait Redis
     public function setCache($key, $value)
     {
         $key = self::$prefix.':'.$key;
-        return Yii::$app->redis->set($key, Json::encode($value));
+        return Yii::$app->redis->set($key, yii\helpers\Json::encode($value));
     }
 
     /**
@@ -56,7 +55,7 @@ trait Redis
     public function setCacheTime($key, $value, $time)
     {
         $key = self::$prefix.':'.$key;
-        return Yii::$app->redis->setex($key, Json::encode($value), $time);
+        return Yii::$app->redis->setex($key, yii\helpers\Json::encode($value), $time);
     }
 
     /**

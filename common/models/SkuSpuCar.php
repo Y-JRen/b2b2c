@@ -76,4 +76,14 @@ class SkuSpuCar extends \yii\db\ActiveRecord
             ],
         ];
     }
+
+    /**
+     * 获取车型其他信息
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBrandSonTypeInfo()
+    {
+        return $this->hasOne(CarBrandSonTypeInfo::className(), ['car_brand_son_type_id' => 'car_type_id']);
+    }
 }

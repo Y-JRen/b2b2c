@@ -11,7 +11,9 @@ namespace common\logic;
 
 use common\models\SkuParameterAndValue;
 use common\models\SkuSku;
+use common\traits\Redis;
 use yii\db\Exception;
+use yii\db\Query;
 
 /**
  * SKU 相关逻辑
@@ -21,6 +23,11 @@ use yii\db\Exception;
  */
 class SkuLogic extends Instance
 {
+    /**
+     * 使用缓存功能
+     */
+    use Redis;
+
     /**
      * 删除SKU
      *
