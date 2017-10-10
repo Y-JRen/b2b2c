@@ -15,6 +15,7 @@ use common\models\CarBrandInfo;
 use common\models\CarBrandSonTypeInfo;
 use common\models\CarBrandTypeInfo;
 use common\models\CarFactoryInfo;
+use common\models\SkuSpuCar;
 use yii\helpers\ArrayHelper;
 use common\traits\Redis;
 
@@ -321,5 +322,23 @@ class CarLogic extends Instance
         }
 
         return $arrReturn;
+    }
+
+    /**
+     * 获取spu 的车型配置信息
+     *
+     * @param $intSpuId
+     * @return array|mixed|null|\yii\db\ActiveRecord
+     */
+    public function getCarInfoBySpuId($intSpuId)
+    {
+        $key = 'sku_spu_car:spu_id:'.$intSpuId;
+        $mixReturn = $this->getCache($key);
+        if (!$mixReturn) {
+            $mixReturn = SkuSpuCar::find()->with('brandSonTypeInfo')->where(['spu_id' => $intSpuId])->asArray()->one();
+            if ($mixReturn) $this->setCache($key, $mixReturn);
+        }
+
+        return  $mixReturn;
     }
 }

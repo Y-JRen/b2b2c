@@ -3,6 +3,7 @@
 namespace frontend\modules\web\controllers;
 
 use common\logic\CarBaseConfLogic;
+use common\logic\CarLogic;
 use common\logic\FinancialLogic;
 use common\logic\SpuLogic;
 use common\logic\StoreLogic;
@@ -45,8 +46,12 @@ class DetailController extends BaseController
                 // 金融方案信息
                 $arrFinancial = FinancialLogic::instance()->getFinancialBySkuId($sku['id'], $sku['item_id']);
 
+                // 查询车型信息
+                $arrCarInfo = CarLogic::instance()->getCarInfoBySpuId($sku['spu_id']);
+
                 // 返回数据
                 $this->handleJson([
+                    'car' => $arrCarInfo,         // 车型信息
                     'detail' => $sku,             // 基础信息
                     'parameter' => $arrParameter, // 属性信息
                     'store' => $arrStore,        // 门店信息
