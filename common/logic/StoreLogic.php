@@ -6,6 +6,7 @@ use common\models\PartnerSellerStore;
 use common\models\SkuItem;
 use common\models\SkuItemStores;
 use common\models\Store;
+use common\traits\Redis;
 use Yii;
 use yii\db\Expression;
 use yii\db\Query;
@@ -16,6 +17,11 @@ use yii\db\Query;
  */
 class StoreLogic extends Instance
 {
+    /**
+     * 使用缓存功能
+     */
+    use Redis;
+
     /**
      * 添加门店和合作商的关联关系
      *
@@ -184,5 +190,75 @@ class StoreLogic extends Instance
             ->innerJoin('store t', '`t`.`id` = `p`.`store_id`')
             ->where($where)
             ->all();
+    }
+
+    /**
+     * 获取商品的门店信息（首先取商品自己的，没有向上一级获取）
+     *
+     * @param integer $intSkuId 商品ID
+     * @param integer $intItemId
+     * @return array
+     */
+    public function getStoresBySkuId($intSkuId, $intItemId)
+    {
+        // 获取门店ID信息
+        $arrIds = $this->getStoresIdsBySkuId($intSkuId);
+        if (empty($arrIds)) {
+            $arrIds = $this->getStoreIdsByItemId($intItemId);
+        }
+
+        // 通过ID获取门店信息
+        $array = Store::find()->where(['id' => $arrIds, 'status' => Store::STATUS_ACTIVE])->asArray()->all();
+        if ($array) {
+            foreach ($array as &$value) {
+                $value['id'] = (int)$value['id'];
+            }
+
+            unset($value);
+        }
+
+        return $array;
+    }
+
+    /**
+     * 获取商品的门店ID信息
+     *
+     * @param integer $intSkuId 商品ID
+     * @return array|mixed
+     */
+    public function getStoresIdsBySkuId($intSkuId)
+    {
+        $key = 'sku_sku_store:sku_id:'.$intSkuId;
+        $mixReturn = $this->getCache($key);
+        if (!$mixReturn) {
+            $mixReturn = (new Query())->select('store_id')
+                ->from('sku_sku_store')
+                ->where(['sku_id' => $intSkuId])
+                ->column();
+            $this->setCache($key, $mixReturn);
+        }
+
+        return $mixReturn;
+    }
+
+    /**
+     * 获取item 的门店ID信息
+     *
+     * @param integer $intItemId itemID
+     * @return array|mixed
+     */
+    public function getStoreIdsByItemId($intItemId)
+    {
+        $key = 'sku_item_stores:item_id:'.$intItemId;
+        $mixReturn = $this->getCache($key);
+        if (!$mixReturn) {
+            $mixReturn = (new Query())->select('store_id')
+                ->from('sku_item_stores')
+                ->where(['item_id' => $intItemId])
+                ->column();
+            $this->setCache($key, $mixReturn);
+        }
+
+        return $mixReturn;
     }
 }
