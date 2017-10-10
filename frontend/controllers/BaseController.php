@@ -3,13 +3,13 @@
 namespace frontend\controllers;
 
 use Yii;
-use yii\web\Response;
 use yii\web\Controller;
 use yii\filters\Cors;
 use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
 use common\logic\UcenterLogic;
 use common\traits\Redis;
+
 
 /**
  * Class BaseController
@@ -23,8 +23,15 @@ use common\traits\Redis;
  */
 class BaseController extends Controller
 {
-
+    /**
+     * 使用缓存功能
+     */
     use Redis;
+
+    /**
+     * 使用json 返回数据功能
+     */
+    use \common\traits\Json;
 
     /**
      * @var bool 关闭csrf 验证
@@ -46,15 +53,6 @@ class BaseController extends Controller
      * @var array 定义私有参数，接口传递参数
      */
     protected $privateParam = [];
-
-    /**
-     * @var array 响应返回的json 数据格式
-     */
-    protected $arrJson = [
-        'errCode' => 1001, // 默认参数格式存在问题
-        'errMsg' => '',
-        'data' => null,
-    ];
 
     /**
      * @return array 定义行为
@@ -195,46 +193,6 @@ class BaseController extends Controller
             'pages' => $this->formatPages($intPage, $intPageSize, $intTotal),
             'lists' => $array
         ];
-    }
-
-    /**
-     * 响应ajax 返回
-     * @param string $array 其他返回参数(默认null)
-     * @return mixed|string
-     */
-    protected function returnJson($array = null)
-    {
-        // 判断是否覆盖之前的值
-        if ($array) $this->arrJson = array_merge($this->arrJson, $array);
-
-        // 没有错误信息使用code 确定错误信息
-        if (empty($this->arrJson['errMsg'])) {
-            $arrErrorInfo = ArrayHelper::getValue(Yii::$app->params, 'arrApiErrorInfo');
-            if (isset($arrErrorInfo[$this->arrJson['errCode']])) {
-                $this->arrJson['errMsg'] = $arrErrorInfo[$this->arrJson['errCode']];
-            }
-        }
-
-        // 可以记录日志信息
-
-        // 设置JSON返回
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        return $this->arrJson;
-    }
-
-    /**
-     * handleJson() 处理返回数据
-     * @param mixed $data 返回数据
-     * @param integer $errCode 返回状态码
-     * @param null $errMsg 提示信息
-     */
-    protected function handleJson($data, $errCode = 0, $errMsg = null)
-    {
-        $this->arrJson['errCode'] = $errCode;
-        $this->arrJson['data'] = $data;
-        if ($errMsg !== null) {
-            $this->arrJson['errMsg'] = $errMsg;
-        }
     }
 }
 
