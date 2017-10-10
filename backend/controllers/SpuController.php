@@ -4,10 +4,9 @@ namespace backend\controllers;
 
 use backend\models\form\SpuItemForm;
 use common\logic\SkuLogic;
-use common\logic\SpuLogic;
 use common\models\SkuItemAttachment;
+use common\models\SkuItemFinancialLease;
 use common\models\SkuItemStores;
-use common\models\SkuSku;
 use common\models\Store;
 use Yii;
 use backend\models\form\SpuForm;
@@ -177,6 +176,13 @@ class SpuController extends Controller
         return $this->redirect(['update', 'id' => $id]);
     }
     
+    /**
+     * 提车地点
+     *
+     * @param $id
+     *
+     * @return string
+     */
     public function actionStore($id)
     {
         $query = Store::find()->alias('a')->innerJoin(SkuItemStores::tableName() .' as b',
@@ -189,5 +195,22 @@ class SpuController extends Controller
             'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
         ]);
         return $this->renderAjax('store', ['dataProvider' => $dataProvider]);
+    }
+    
+    /**
+     * 融资租凭 金融方案
+     *
+     * @param $id
+     *
+     * @return string
+     */
+    public function actionFinancialLease($id)
+    {
+        $query = SkuItemFinancialLease::find()->where(['item_id' => $id]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
+        ]);
+        return $this->renderAjax('lease', ['dataProvider' => $dataProvider]);
     }
 }
