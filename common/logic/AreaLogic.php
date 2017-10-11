@@ -97,4 +97,10 @@ class AreaLogic extends Instance
         }
         return $returnData;
     }
+
+    public function getChildrenByParentCode($code)
+    {
+        $area = Area::findAll(['PARENT_CODE'=>$code]);
+        return ArrayHelper::map($area,'AREA_CODE','AREA_NAME');
+    }
 }

@@ -9,6 +9,7 @@ use common\models\SkuItemStores;
 use Yii;
 use common\models\Store;
 use common\logic\AMapLogic;
+use yii\bootstrap\Html;
 use yii\web\NotFoundHttpException;
 use common\logic\PartnerLogic;
 use yii\filters\VerbFilter;
@@ -209,6 +210,7 @@ class StoreController extends Controller
         // 接受参数
         $id = Yii::$app->request->post('id');
         $intStoreId = Yii::$app->request->post('store_id');
+        $this->arrJson['errMsg'] = '参数错误';
         if ($id && $intStoreId) {
             if (StoreLogic::instance()->updateSpuItemStore($id, $intStoreId)) {
                 $this->handleJson($id, 0, '添加成功');
@@ -237,5 +239,18 @@ class StoreController extends Controller
         }
 
         return $this->asJson($this->arrJson);
+    }
+
+    public function actionGetStoreByArea($area_code)
+    {
+        $model = StoreLogic::instance()->getStoreByArea($area_code);
+        $aa="--请选择门店--";
+
+        echo Html::tag('option',$aa, ['value'=>'empty']) ;
+
+        foreach($model as $value=>$name)
+        {
+            echo Html::tag('option',Html::encode($name),array('value'=>$value));
+        }
     }
 }
