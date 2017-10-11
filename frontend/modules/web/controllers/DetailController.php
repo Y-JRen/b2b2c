@@ -99,7 +99,7 @@ class DetailController extends BaseController
     {
         // 获取类型
         $type = ArrayHelper::getValue($this->privateParam, 'type');
-        $intCarId = ArrayHelper::getValue($this->privateParam, 'car_id');
+        $intCarId = ArrayHelper::getValue($this->privateParam, 'car_type_id');
 
         // 传递参数不能为空
         if ($type && $intCarId) {

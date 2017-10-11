@@ -2,6 +2,7 @@
 
 namespace common\logic;
 
+use common\models\Partner;
 use common\models\SkuParameterAndValue;
 use common\models\SkuSku;
 use common\traits\Redis;
@@ -124,17 +125,33 @@ class SkuItemLogic extends Instance
                 ->indexBy('car_brand_son_type_id')
                 ->all();
 
+            $arrPartnerIds = array_column($array, 'partner_id');
+            $arrPartner = Partner::find()->select(['name', 'id'])
+                ->where(['id' => $arrPartnerIds])
+                ->asArray()
+                ->indexBy('id')
+                ->all();
+
             foreach ($array as &$value) {
                 // 存在sku_id 信息
-                $value['sku_id'] = 0;
                 if (isset($arrSku[$value['id']])) {
                     $value['sku_id'] = (int)$arrSku[$value['id']]['id'];
+                } else {
+                    $value['sku_id'] = 0;
                 }
 
                 // 指导价
-                $value['factory_price'] = '0';
                 if (isset($arrCars[$value['car_type_id']])) {
                     $value['factory_price'] = $arrCars[$value['car_type_id']]['factory_price'];
+                } else {
+                    $value['factory_price'] = '0';
+                }
+
+                // 厂商名称
+                if (isset($arrPartner[$value['partner_id']])) {
+                    $value['partner_name'] = $arrPartner[$value['partner_id']]['name'];
+                } else {
+                    $value['partner_name'] = '';
                 }
 
                 $value['spu_id'] = (int)$value['spu_id'];
