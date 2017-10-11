@@ -4,8 +4,8 @@ namespace backend\controllers;
 
 use backend\models\form\SpuItemForm;
 use common\logic\SkuLogic;
+use common\models\SkuFinancialLease;
 use common\models\SkuItemAttachment;
-use common\models\SkuItemFinancialLease;
 use common\models\SkuItemStores;
 use common\models\Store;
 use Yii;
@@ -114,7 +114,6 @@ class SpuController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->saveItem()) {
             return $this->redirect(['update', 'id' => $model->id]);
         } else {
-            //print_r($model);die;
             if ($model->errors) {
                 foreach ($model->errors as $error){
                     Yii::$app->session->setFlash('error', $error[0]);
@@ -200,13 +199,13 @@ class SpuController extends Controller
     /**
      * 融资租凭 金融方案
      *
-     * @param $id
+     * @param $skuId
      *
      * @return string
      */
-    public function actionFinancialLease($id)
+    public function actionFinancialLease($skuId)
     {
-        $query = SkuItemFinancialLease::find()->where(['item_id' => $id]);
+        $query = SkuFinancialLease::find()->where(['sku_id' => $skuId]);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => ['defaultOrder' => ['id' => SORT_DESC]]

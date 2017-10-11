@@ -5,7 +5,7 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "sku_item_financial_lease".
+ * This is the model class for table "sku_sku_financial_lease".
  *
  * @property string $id
  * @property integer $down_payment
@@ -14,21 +14,21 @@ use Yii;
  * @property integer $tail_fee
  * @property integer $tail_pay_period
  * @property integer $tail_month_pay_fee
- * @property integer $server_charge
- * @property integer $item_id
+ * @property integer $service_charge
+ * @property integer $sku_id
  * @property integer $partner_id
  * @property integer $spu_id
  * @property string $create_time
  * @property string $create_person
  */
-class SkuItemFinancialLease extends \yii\db\ActiveRecord
+class SkuFinancialLease extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'sku_item_financial_lease';
+        return 'sku_sku_financial_lease';
     }
 
     /**
@@ -37,8 +37,8 @@ class SkuItemFinancialLease extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['down_payment', 'month_period', 'month_lease_fee', 'tail_fee', 'tail_pay_period', 'tail_month_pay_fee', 'item_id', 'partner_id', 'spu_id'], 'required'],
-            [['down_payment', 'month_period', 'month_lease_fee', 'tail_fee', 'tail_pay_period', 'tail_month_pay_fee', 'server_charge', 'item_id', 'partner_id', 'spu_id'], 'integer'],
+            [['down_payment', 'month_period', 'month_lease_fee', 'tail_fee', 'tail_pay_period', 'tail_month_pay_fee', 'sku_id', 'partner_id', 'spu_id'], 'required'],
+            [['down_payment', 'month_period', 'month_lease_fee', 'tail_fee', 'tail_pay_period', 'tail_month_pay_fee', 'service_charge', 'sku_id', 'partner_id', 'spu_id'], 'integer'],
             [['create_time'], 'safe'],
             [['create_person'], 'string', 'max' => 255],
         ];
@@ -57,10 +57,10 @@ class SkuItemFinancialLease extends \yii\db\ActiveRecord
             'tail_fee' => '尾款金额',
             'tail_pay_period' => '尾款分期期数',
             'tail_month_pay_fee' => '尾款月供金额',
-            'server_charge' => '服务费',
-            'item_id' => 'Item ID',
+            'service_charge' => '服务费',
+            'sku_id' => 'sku关联ID',
             'partner_id' => '合作商',
-            'spu_id' => 'Spu ID',
+            'spu_id' => 'spu',
             'create_time' => '创建时间',
             'create_person' => '创建人',
         ];

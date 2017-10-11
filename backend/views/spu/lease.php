@@ -12,7 +12,7 @@ use yii\helpers\Html;
     <div class="box-header with-border">
         <?= Html::a('添加方案', 'javascript:void(0)', ['class' => 'btn btn-default lease_add']) ?>
     </div>
-    <div class="row content">
+    <div class="row content" id="lease_add">
         
         <?= \common\widgets\GridView::widget([
             'dataProvider' => $dataProvider,
@@ -58,7 +58,7 @@ use yii\helpers\Html;
                 [
                     'label' => '服务费',
                     'value' => function($model) {
-                        return $model->tail_month_pay_fee;
+                        return $model->service_charge;
                     }
                 ],
                 [
@@ -75,23 +75,17 @@ use yii\helpers\Html;
     </div>
 </div>
 
-<div class="add_form" >
-    <tr>
-        <td><input class="form-control"></td>
-        <td><input class="form-control"></td>
-        <td><input class="form-control"></td>
-        <td><input class="form-control"></td>
-        <td><input class="form-control"></td>
-        <td><input class="form-control"></td>
-        <td><input class="form-control"></td>
-        <td><input class="form-control"></td>
-    </tr>
-</div>
-
 <?php
 
 $script = <<<_SCRIPT
-
+    var add_form = '<tr><td><input class="form-control"></td><td><input class="form-control"></td><td><input class="form-control"></td><td><input class="form-control"></td><td><input class="form-control"></td><td><input class="form-control"></td><td><input class="form-control"></td><td></td></tr>'
+    $('.lease_add').click(function(){
+        if($('#lease_add tbody').find('.empty').length) {
+            $('#lease_add tbody').html(add_form);
+        } else {
+            $('#lease_add tbody').append(add_form);
+        }
+    });
 _SCRIPT;
 
 

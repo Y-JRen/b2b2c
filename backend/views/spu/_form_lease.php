@@ -15,8 +15,8 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
 <div class="nav-tabs-custom">
     <ul class="nav nav-tabs">
         <li class="active"><a href="#activity" data-toggle="tab" aria-expanded="true">基本信息</a></li>
-        <li class=""><a href="#timeline" data-toggle="tab" aria-expanded="false">商品介绍</a></li>
-        <li class=""><a href="#settings" data-toggle="tab" aria-expanded="false">提车地点</a></li>
+        <li class=""><a href="#introduce" data-toggle="tab" aria-expanded="false">商品介绍</a></li>
+        <li class=""><a href="#store" data-toggle="tab" aria-expanded="false">提车地点</a></li>
     </ul>
     <div class="tab-content">
         <div class="tab-pane active" id="activity">
@@ -112,28 +112,31 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
                             <br><br>
                             <div class="col-sm-offset-1 col-sm-8">
                                 <table class="table table-bordered">
-                                    <tbody>
+                                    <thead>
                                     <tr>
                                         <th>外观颜色</th>
                                         <th>内饰颜色</th>
                                         <th>售价（元）（默认指导价）</th>
-                                        <th>商品标题(必填)</th>
+                                        <th>商品标题</th>
                                         <th>自定义标题</th>
                                         <th>金融方案</th>
                                         <th>操作</th>
                                     </tr>
-                                    </tbody>
+                                    </thead>
                                     <tbody id="sku">
                                         <?php foreach ($model->sku as $k => $sku):?>
                                             <tr>
-                                                <?php $param = \common\logic\SpuLogic::instance()->getParameter($sku->id)?>
-                                                <input type="hidden" name="SpuItemForm[sku][<?=$k?>][id]" value="<?=$sku->id?>">
+                                                <?php $param = \common\logic\SpuLogic::instance()->getParameter($sku['id']);?>
+                                                <input type="hidden" name="SpuItemForm[sku][<?=$k?>][id]" value="<?=$sku['id']?>">
                                                 <td><?=$param['外色']?></td>
                                                 <td><?=$param['内色']?></td>
-                                                <td><input class="form-control" name="SpuItemForm[sku][<?=$k?>][price]" value="<?=$sku->price?>"></td>
-                                                <td><input class="form-control" name="SpuItemForm[sku][<?=$k?>][name]" value="<?=$sku->name?>"></td>
-                                                <td><input class="form-control" name="SpuItemForm[sku][<?=$k?>][subname]" value="<?=$sku->subname?>"></td>
-                                                <td><?=Html::a('删除', ['delete-sku', 'skuId' => $sku->id, 'id' => $model->id])?></td>
+                                                <td><input class="form-control" name="SpuItemForm[sku][<?=$k?>][price]" value="<?=$sku['price']?>"></td>
+                                                <td><input class="form-control" name="SpuItemForm[sku][<?=$k?>][name]" value="<?=$sku['name']?>"></td>
+                                                <td><input class="form-control" name="SpuItemForm[sku][<?=$k?>][subname]" value="<?=$sku['subname']?>"></td>
+                                                <?php if($model->item_type_id == 2) :?>
+                                                    <td><a href="javascript:void(0)" class="add_lease">编辑</a></td>
+                                                <?php endif;?>
+                                                <td><?=Html::a('删除', ['delete-sku', 'skuId' => $sku['id'], 'id' => $model->id])?></td>
                                             </tr>
                                         <?php  endforeach;?>
                                     </tbody>
@@ -161,15 +164,25 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
             </div>
         
         </div>
+
+        <div class="tab-pane" id="introduce">
+            <?=$this->render('_form_introduce', [
+                'model' => $model,
+            ]) ;?>
+        </div>
+
+        <div class="tab-pane active" id="store">
+
+        </div>
     </div>
 </div>
 
 <?php
 $store_url = \yii\helpers\Url::to(['store', 'id' => $model->id]);
-$add_lease_url = \yii\helpers\Url::to(['financial-lease', 'id' => $model->id]);
+$add_lease_url = \yii\helpers\Url::to(['financial-lease', 'skuId' => $model->id]);
 $script = <<<_SCRIPT
 
-    $(".nav-tabs li").click(function(){
+    $(".nav-tabs li a").click(function(){
         if($(this).attr('href') == '#store') {
             $.get('{$store_url}',function(html){
                 $('#store').html(html)
@@ -233,18 +246,20 @@ $script = <<<_SCRIPT
         }
         skuVal = $("input[name='SpuItemForm[sku]']").val();
         $("input[name='SpuItemForm[sku]']").val(skuVal++);
-        var html = '<tr>';
-        html += '<td><input name="SpuItemForm[sku]['+skuVal+'][outer_color_label_id]" value="'+outer_color_label_id+'" type="hidden"><input name="SpuItemForm[sku]['+skuVal+'][outer_color_label_value]" value="'+outer_color_label_value+'" type="hidden"><input name="SpuItemForm[sku]['+skuVal+'][outer_color_value_id]" value="'+outer_color_value_id+'" type="hidden"><input name="SpuItemForm[sku]['+skuVal+'][outer_color_value_value]" value="'+outer_color_value_value+'" type="hidden">'+outer_color_value_value+ '</td>';
-        html += '<td><input name="SpuItemForm[sku]['+skuVal+'][inner_color_label_id]" value="'+inner_color_label_id+ '" type="hidden"><input name="SpuItemForm[sku]['+skuVal+'][inner_color_label_value]" value="'+inner_color_label_value+ '" type="hidden"><input name="SpuItemForm[sku]['+skuVal+'][inner_color_value_id]" value="'+inner_color_value_id+ '" type="hidden"><input name="SpuItemForm[sku]['+skuVal+'][inner_color_value_value]" value="'+inner_color_value_value+ '" type="hidden">'+inner_color_value_value+'</td>';
-        html +=  '<td><input name="SpuItemForm[sku]['+skuVal+'][price]" value="{$guidePrice}" class="form-control sku_price"></td>';
-        html +=  '<td><input name="SpuItemForm[sku]['+skuVal+'][name]" class="form-control sku_name"></td>';
-        html +=  '<td><input name="SpuItemForm[sku]['+skuVal+'][subname]" class="form-control"></td>';
-        html +=  '<td><a href="javascript:void(0)" class="add_lease">编辑</a></td>';
-        html += '<td><a href="javascript:void(0)" class="del_sku">删除</a></td></tr>';
-        
-       
-        $("#sku").append(html);
-       
+        $.ajax({
+            url: "/sku/add",
+            method: 'post',
+            data: {key: skuVal,item_id:{$model->id},data:{inner_color_label_id:inner_color_label_id,inner_color_label_value:inner_color_label_value,inner_color_value_id:inner_color_value_id,inner_color_value_value:inner_color_value_value,
+            outer_color_label_id:outer_color_label_id,outer_color_label_value:outer_color_label_value,outer_color_value_id:outer_color_value_id,outer_color_value_value,outer_color_value_value}},
+            dataType:'json',
+            success: function(data){
+                if(data.isSuccess) {
+                    $("#sku").append(data.data);
+                } else {
+                    layer.msg('添加失败');
+                }
+            }
+        });
     });
     
     $("body").delegate('.del_sku', "click",function(){
@@ -264,49 +279,9 @@ $script = <<<_SCRIPT
             });
         }, 'html');
     });
-    
-    $(document).ready(
-    $('#w0').on('beforeSubmit', function(event, jqXHR, settings) {
-        $('.field-spuitemform-color input').blur(function(){
-             $('.field-spuitemform-color').removeClass('has-error');
-              $(".sku_name").removeClass('has-error');
-            $('.field-spuitemform-color').find('.help-block').html('');
-        });
-        $(".sku_name").each(function(){
-            $(this).parent().removeClass('has-error');
-            $('.field-spuitemform-color').find('.help-block').html('');
-            if(!$(this).val()){
-                $(this).parent().addClass('has-error');
-                $('.field-spuitemform-color').find('.help-block').html('<div style="color: red;">商品标题必填</div>');
-            }
-        });
-        if(!$("input[name='SpuItemForm[sku]']").val()) {
-            $('.field-spuitemform-color').removeClass('has-error');
-            $('.field-spuitemform-color').find('.help-block').html('');
-            if(!$(this).val()){
-                $('.field-spuitemform-color').addClass('has-error');
-                $('.field-spuitemform-color').find('.help-block').html('外观颜色必选')
-            }
-        }
-        var form = $(this);
-        if(form.find('.has-error').length) {
-            return false;
-        }
-
-        $.ajax({
-            url: form.attr('action'),
-            type: 'post',
-            data: form.serialize(),
-            success: function(data) {
-                // do something ...
-            }
-        });
-
-        return false;
-    }),
-);
 
 
 _SCRIPT;
 
-$this->registerJs($script);?>
+
+$this->registerJs($script);

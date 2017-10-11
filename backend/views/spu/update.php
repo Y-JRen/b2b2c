@@ -29,3 +29,13 @@ $this->params['breadcrumbs'][] = '编辑';
     ?>
 
 </div>
+
+<?php
+
+$css = <<<_CSS
+#sku tr td{
+    line-height: 30px;
+    text-align: center;
+}
+_CSS;
+$this->registerCss($css);?>
