@@ -208,13 +208,18 @@ class StoreLogic extends Instance
         }
 
         // 通过ID获取门店信息
-        $array = Store::find()->where(['id' => $arrIds, 'status' => Store::STATUS_ACTIVE])->asArray()->all();
+        $array = Store::find()->select([
+            'id', 'name', 'city_code', 'city_name', 'province_code', 'province_name',
+            'area_code', 'area_name', 'contact_person', 'contact_phone', 'address'
+        ])->where(['id' => $arrIds, 'status' => Store::STATUS_ACTIVE])->asArray()->all();
         if ($array) {
             foreach ($array as &$value) {
                 $value['id'] = (int)$value['id'];
             }
 
             unset($value);
+        } else {
+            $array = null;
         }
 
         return $array;

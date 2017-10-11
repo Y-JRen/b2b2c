@@ -6,9 +6,7 @@ use common\logic\CarBaseConfLogic;
 use common\logic\CarLogic;
 use common\logic\FinancialLogic;
 use common\logic\SkuItemLogic;
-use common\logic\SpuLogic;
 use common\logic\StoreLogic;
-use common\models\SkuParameterAndValue;
 use common\models\SkuSku;
 use frontend\controllers\BaseController;
 use yii\helpers\ArrayHelper;
@@ -38,6 +36,9 @@ class DetailController extends BaseController
                 $sku['spu_id'] = (int)$sku['spu_id'];
                 $sku['item_id'] = (int)$sku['item_id'];
                 $sku['partner_id'] = (int)$sku['partner_id'];
+                $sku['status'] = (int)$sku['status'];
+                $sku['item_type_id'] = (int)$sku['item_type_id'];
+                $sku['spu_type_id'] = (int)$sku['spu_type_id'];
 
                 // 查询出全部属性信息
                 $arrParameters = SkuItemLogic::instance()->getItemParameters($sku['item_id']);
@@ -47,9 +48,12 @@ class DetailController extends BaseController
 
                 // 金融方案信息
                 $arrFinancial = FinancialLogic::instance()->getFinancialBySkuId($sku['id'], $sku['item_id']);
+                if (empty($arrFinancial)) {
+                    $arrFinancial = null;
+                }
 
                 // 查询车型信息
-                $arrCarInfo = CarLogic::instance()->getCarInfoBySpuId($sku['spu_id']);
+                $arrCarInfo = CarLogic::instance()->getCarInfoBySpuId($sku['spu_id'], true);
 
                 // 返回数据
                 $this->handleJson([

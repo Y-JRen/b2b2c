@@ -7,6 +7,7 @@ use common\models\SkuParameterAndValue;
 use common\models\SkuSku;
 use common\traits\Redis;
 use yii\db\Query;
+use yii\helpers\ArrayHelper;
 
 
 /**
@@ -34,19 +35,22 @@ class SkuItemLogic extends Instance
         $arrReturn = [];
         if ($arrIds) {
             // 查询出全部属性信息
-            $arrParameters = SkuParameterAndValue::find()->where(['sku_id' => $arrIds])->asArray()->all();
-            foreach ($arrParameters as $value) {
-                if (!isset($arrReturn[$value['sku_id']])) {
-                    $arrReturn[$value['sku_id']] = [];
+            $arrReturn = SkuParameterAndValue::find()
+                ->select(['parameter_id', 'parameter_name', 'value_id', 'value_name', 'sku_id'])
+                ->where(['sku_id' => $arrIds])->asArray()->all();
+            foreach ($arrReturn as &$value) {
+                $key = $value['sku_id'];
+                if (!isset($arrReturn[$key])) {
+                    $arrReturn[$key] = [];
                 }
 
-                $arrReturn[$value['sku_id']][] = [
-                    'parameter_id' => (int)$value['parameter_id'],
-                    'parameter_name' => $value['parameter_name'],
-                    'value_id' => (int)$value['value_id'],
-                    'value_name' => $value['value_name'],
-                ];
+                $value['parameter_id'] = (int)$value['parameter_id'];
+                $value['value_id'] = (int)$value['value_id'];
             }
+
+            unset($value);
+
+            $arrReturn = ArrayHelper::index($arrReturn, null, ['parameter_id']);
         }
 
         return $arrReturn;
