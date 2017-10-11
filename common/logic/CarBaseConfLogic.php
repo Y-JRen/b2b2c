@@ -43,9 +43,7 @@ class CarBaseConfLogic extends Instance
             'pk' => 'CAR_ID',           // (该表的唯一性 id 不能以 car_id 唯一)
             'title' => '车辆配置-颜色',
             'type' => 'all',
-            'group' => 'type',
-            'name' => 'name',
-            'value' => 'value',
+            'group' => 'type'
         ],
         'car_base_conf_elec' => [
             'pk' => 'CAR_ID',
@@ -168,11 +166,15 @@ class CarBaseConfLogic extends Instance
 
                 // 处理是否需要分组
                 if ($mixReturn && !empty($table['group'])) {
-                    $mixReturn = ArrayHelper::map($mixReturn, $table['name'], $table['value'], $table['group']);
+                    $mixReturn = ArrayHelper::index($mixReturn, null, $table['group']);
                 }
 
                 // 生成缓存信息
-                if ($mixReturn) $this->setCache($strKey, $mixReturn);
+                if ($mixReturn) {
+                    $this->setCache($strKey, $mixReturn);
+                } else {
+                    $mixReturn = null;
+                }
             }
         }
 
