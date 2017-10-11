@@ -2,11 +2,12 @@
 
 namespace frontend\modules\web\controllers;
 
+use common\helpers\Helper;
 use common\logic\CarLogic;
+use common\logic\SkuItemLogic;
 use common\models\CarBrandInfo;
 use frontend\controllers\BaseController;
 use Yii;
-use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -102,64 +103,35 @@ class ListController extends BaseController
      */
     public function actionSearch()
     {
-        // 默认查询条件
-        $where = [];
-
-        // 品牌
-        $brandId = (int)ArrayHelper::getValue($this->privateParam, 'brand_id');
-        if ($brandId) {
-            $where[] = ['=', 'c.brand_id', $brandId];
-        }
-
-        // 车系
-        $intSeriesId = (int)ArrayHelper::getValue($this->privateParam, 'series_id');
-        if ($intSeriesId) {
-            $where[] = ['=', 'c.series_id', $intSeriesId];
-        }
-
-        // 首付金额(价格区间) - 传入的单位为万，库里面存储的单位为分 需要* 1000000
-        $minPrice = ArrayHelper::getValue($this->privateParam, 'min_price');
-        if ($minPrice) {
-            $where[] = ['>', 'i.down_payment', $minPrice * 1000000];
-        }
-
-        $maxPrice = ArrayHelper::getValue($this->privateParam, 'max_price');
-        if ($maxPrice) {
-            $where[] = ['<=', 'i.down_payment', $maxPrice * 1000000];
-        }
-
-        if ($where) array_unshift($where, 'and');
+        // 查询条件
+        $where = Helper::handleWhere($this->privateParam, [
+            // 品牌
+            'brand_id' => ['field' => 'c.brand_id'],
+            // 车系
+            'series_id' => ['field' => 'c.series_id'],
+            // 最小首付金额价格
+            'min_price' => function($value) {
+                return ['>', 'i.down_payment', $value * 1000000];
+            },
+            // 最大首付金额价格
+            'max_price' => function($value) {
+                return ['<=', 'i.down_payment', $value * 1000000];
+            }
+        ]);
 
         // 查询数据
-        $query = (new Query())->select([
-            'c.brand_id', 'c.brand_name', 'c.series_id',
-            'c.series_name', 'c.car_type_id', 'c.car_type_name',
-            'c.spu_id', 'i.partner_id', 'c.id', 'i.image'
-        ])
-            ->from('sku_spu_car as c')
-            ->innerJoin('sku_item as i', '`c`.`spu_id` = `i`.`spu_id`')
-            ->where($where);
-
-        $total = (int)$query->count();
         $pages = $this->getPageParams();
-        $lists = $query->offset($pages['offset'])->limit($pages['limit'])->all();
-
-        if ($lists) {
-            foreach ($lists as &$value) {
-                $value['brand_id'] = (int)$value['brand_id'];
-                $value['series_id'] = (int)$value['series_id'];
-                $value['car_type_id'] = (int)$value['car_type_id'];
-                $value['spu_id'] = (int)$value['spu_id'];
-                $value['partner_id'] = (int)$value['partner_id'];
-                $value['id'] = (int)$value['id'];
-            }
-
-            unset($value);
-        }
+        $arrResult = SkuItemLogic::instance()->searchItem([
+            'where' => $where,
+            'offset' => $pages['offset'],
+            'limit' => $pages['limit'],
+        ]);
 
         // 格式化后返回
-        $array = $this->formatPageLists($lists, $pages['page'], $pages['size'], $total);
-        $this->handleJson($array);
-        return $this->returnJson();
+        $array = $this->formatPageLists($arrResult['lists'], $pages['page'], $pages['size'], $arrResult['total']);
+        return $this->returnJson([
+            'data' => $array,
+            'errCode' => 0
+        ]);
     }
 }

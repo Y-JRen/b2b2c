@@ -62,10 +62,11 @@ class Helper
      * 处理通过请求参数对应yii2 where 查询条件
      * @param array $params 请求参数数组
      * @param array $where 定义查询处理方式数组
+     * @param bool $hasKey 是否需要传入key
      * @param string $join 默认查询方式是and
      * @return array
      */
-    public static function handleWhere($params, $where, $join = 'and')
+    public static function handleWhere($params, $where, $hasKey = false, $join = 'and')
     {
         $arrReturn = [];
         if ($where) {
@@ -109,7 +110,7 @@ class Helper
 
                             // 对象(匿名函数)
                             case 'object':
-                                $arrReturn[] = $where[$key]($value);
+                                $arrReturn[] = $hasKey ? $where[$key]($key, $value) : $where[$key]($value);
                                 break;
 
                             // 其他类型

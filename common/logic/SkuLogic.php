@@ -50,4 +50,5 @@ class SkuLogic extends Instance
         }
         return true;
     }
+
 }

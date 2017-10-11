@@ -5,8 +5,10 @@ namespace frontend\modules\web\controllers;
 use common\logic\CarBaseConfLogic;
 use common\logic\CarLogic;
 use common\logic\FinancialLogic;
+use common\logic\SkuItemLogic;
 use common\logic\SpuLogic;
 use common\logic\StoreLogic;
+use common\models\SkuParameterAndValue;
 use common\models\SkuSku;
 use frontend\controllers\BaseController;
 use yii\helpers\ArrayHelper;
@@ -29,7 +31,7 @@ class DetailController extends BaseController
         $id = ArrayHelper::getValue($this->privateParam, 'id');
         if ($id) {
             // 查询sku 信息
-            $sku = SkuSku::find()->with('parameter')->where(['id' => $id])->asArray()->one();
+            $sku = SkuSku::find()->where(['id' => $id])->asArray()->one();
             if ($sku) {
                 // 格式化数据
                 $sku['id'] = (int)$sku['id'];
@@ -37,8 +39,8 @@ class DetailController extends BaseController
                 $sku['item_id'] = (int)$sku['item_id'];
                 $sku['partner_id'] = (int)$sku['partner_id'];
 
-                // 查询spu_id 的属性信息
-                $arrParameter = SpuLogic::instance()->getParameterValueBySupId($sku['spu_id']);
+                // 查询出全部属性信息
+                $arrParameters = SkuItemLogic::instance()->getItemParameters($sku['item_id']);
 
                 // 查询门店信息
                 $arrStore = StoreLogic::instance()->getStoresBySkuId($sku['id'], $sku['item_id']);
@@ -53,7 +55,7 @@ class DetailController extends BaseController
                 $this->handleJson([
                     'car' => $arrCarInfo,         // 车型信息
                     'detail' => $sku,             // 基础信息
-                    'parameter' => $arrParameter, // 属性信息
+                    'parameter' => $arrParameters, // 属性信息
                     'store' => $arrStore,        // 门店信息
                     'financial' => $arrFinancial, // 金融方案
                 ]);
