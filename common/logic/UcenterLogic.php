@@ -40,9 +40,29 @@ class UcenterLogic extends Instance
         ];
 
         $url = $this->cfg['domain'] . '/sso/user/check-login';
-        $arrResult = HttpLogic::http_post($url, $post, [], true);
+        $arrResult = HttpLogic::http_post($url, $post, true);
         // 成功失败
         return (isset($arrResult['err_code']) && $arrResult['err_code'] == 0);
+    }
+
+    /**
+     * 通过token 获取用户的基本信息
+     * @param string $token 用户登录授权的token
+     * @return null|array
+     */
+    public function getUserInfo($token)
+    {
+        $url = $this->cfg['domain'].'/sso/user-base/info';
+        $arrResult = HttpLogic::http_get($url, ['token' => $token],true);
+
+        // 验证请求是否成功
+        if (isset($arrResult['err_code']) && $arrResult['err_code'] == 0) {
+            $mixReturn = $arrResult['data'];
+        } else {
+            $mixReturn = null;
+        }
+
+        return $mixReturn;
     }
 
 }

@@ -119,10 +119,8 @@ class SpuController extends Controller
                     Yii::$app->session->setFlash('error', $error[0]);
                 }
             }
-            $image_model = SkuItemAttachment::find()->where(['item_id'=>$id])->all();
             return $this->render('update', [
-                'model' => $model,
-                'image_model' => $image_model,
+                'model' => $model
             ]);
         }
     }

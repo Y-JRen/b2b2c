@@ -70,14 +70,16 @@ class HttpLogic extends Instance
     }
 
     /**
+     * get 请求发送获取数据
+     *
      * @param string $url 请求地址
      * @param array $params 请求参数
-     * @param array $options 请求配置信息
      * @param bool $writeLog 是否写日志 默认 false
      * @param bool $isToJson 是否将结果转json
+     * @param array $options 请求配置信息
      * @return mixed
      */
-    public static function http_get($url, $params = [], $options = [], $writeLog = false, $isToJson = true)
+    public static function http_get($url, $params = [], $writeLog = false, $isToJson = true, $options = [])
     {
         $strParams = $params ? http_build_query($params) : '';
         $strParams = strpos($url, '?') ? $strParams : '?' . $strParams;
@@ -85,14 +87,16 @@ class HttpLogic extends Instance
     }
 
     /**
+     * post 请求获取数据
+     *
      * @param string $url 请求地址
      * @param array $params 请求参数
-     * @param array $options 请求配置信息
      * @param bool $writeLog 是否写日志 默认 false
      * @param bool $isToJson 是否将结果转json
+     * @param array $options 请求配置信息
      * @return mixed
      */
-    public static function http_post($url, $params = [], $options = [], $writeLog = false, $isToJson = true)
+    public static function http_post($url, $params = [], $writeLog = false, $isToJson = true, $options = [])
     {
         $options[CURLOPT_POST] = 1;
         $options[CURLOPT_POSTFIELDS] = http_build_query($params);
