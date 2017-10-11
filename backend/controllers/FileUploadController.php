@@ -74,7 +74,8 @@ class FileUploadController extends Controller
     {
         $skuItem = SkuItem::findOne($id);
         if($skuItem) {
-            SkuItemAttachment::findOne(['url'=>$url,'item_id'=>$id])->delete();
+            $attach = SkuItemAttachment::findOne(['url'=>$url,'item_id'=>$id]);
+            $attach && $attach->delete();
             return $this->actionDelete($url);
         }else{
             return '商品不存在';
