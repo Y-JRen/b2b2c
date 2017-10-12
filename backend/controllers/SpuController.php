@@ -189,7 +189,8 @@ class SpuController extends BaseController
         ]);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
+            'sort' => ['defaultOrder' => ['id' => SORT_DESC]],
+            'pagination' =>['pageSize' => 20],
         ]);
         return $this->renderAjax('store', ['dataProvider' => $dataProvider]);
 
