@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use common\widgets\GridView;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\search\Spu */
@@ -10,6 +11,8 @@ use common\widgets\GridView;
 $this->title = '商品管理';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?php Pjax::begin(['enablePushState'=>false]); ?>
+
 <div class="spu-form-index">
     <div class="box-body table-responsive no-padding">
 
@@ -61,3 +64,4 @@ $this->params['breadcrumbs'][] = $this->title;
         ]); ?>
     </div>
 </div>
+<?php Pjax::end(); ?>
