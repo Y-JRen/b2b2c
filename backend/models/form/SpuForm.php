@@ -27,9 +27,17 @@ use yii\db\Exception;
  */
 class SpuForm extends SkuItem
 {
-    const SCENARIO_SAVE_BASE = 'save_base';
+    /**
+     * 融资租凭
+     */
+    const SCENARIO_SAVE_LEASE = 'save_lease';
+    
+    /**
+     * 商品介绍
+     */
     const SCENARIO_SAVE_INTRODUCE = 'save_introduce';
     
+    const SCENARIO_SAVE_BASE = 'save_base';
     
     public $type_id = 1;
     
@@ -83,7 +91,7 @@ class SpuForm extends SkuItem
      */
     public function beforeValidate()
     {
-        if($this->getScenario() == self::SCENARIO_SAVE_BASE){
+        if($this->getScenario() == self::SCENARIO_SAVE_BASE || $this->getScenario() == 'default'){
             $carLogic = CarLogic::instance();
             if ($this->brand_id && $this->car_id && $this->series_id) {
                 $this->name = $carLogic->getBrandName($this->brand_id) . '-' . $carLogic->getSeriesName($this->series_id) . '-' . $carLogic->getCarName($this->car_id);
