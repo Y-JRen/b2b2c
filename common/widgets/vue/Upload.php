@@ -145,7 +145,12 @@ var vue = new Vue({
     },
     methods: {
         handleRemove(file, fileList) {
-            $.get('{$this->deleteUrl}&url='+file.response)
+            if(file.response){
+                $.get('{$this->deleteUrl}&url='+file.response)
+            } else {
+                $.get('{$this->deleteUrl}&url='+file.url)
+            }
+            
             this.count--
             var html = '';
             console.log(fileList)
