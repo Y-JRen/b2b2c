@@ -4,22 +4,20 @@ namespace backend\controllers;
 
 use backend\models\form\SpuItemForm;
 use common\logic\SkuLogic;
-use common\models\SkuItemAttachment;
-use common\models\SkuItemFinancialLease;
+use common\models\SkuFinancialLease;
 use common\models\SkuItemStores;
 use common\models\Store;
 use Yii;
 use backend\models\form\SpuForm;
 use backend\models\search\Spu;
 use yii\data\ActiveDataProvider;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
  * SpuController implements the CRUD actions for SpuForm model.
  */
-class SpuController extends Controller
+class SpuController extends BaseController
 {
     /**
      * @inheritdoc
@@ -81,7 +79,6 @@ class SpuController extends Controller
     public function actionCreate()
     {
         $model = new SpuForm();
-
         if ($model->load(Yii::$app->request->post()) && $model->saveAll()) {
             return $this->redirect(['update', 'id' => $model->id]);
         } else {
@@ -108,13 +105,15 @@ class SpuController extends Controller
         $fm = Yii::$app->request->post('fm');
         if($fm == 'introduce'){
             $model->setScenario($model::SCENARIO_SAVE_INTRODUCE);
-        }else{
+        }elseif($model->item_type_id == 2){
+            $model->setScenario($model::SCENARIO_SAVE_LEASE);
+        } else {
             $model->setScenario($model::SCENARIO_SAVE_BASE);
         }
+        
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->saveItem()) {
             return $this->redirect(['update', 'id' => $model->id]);
         } else {
-            //print_r($model);die;
             if ($model->errors) {
                 foreach ($model->errors as $error){
                     Yii::$app->session->setFlash('error', $error[0]);
@@ -183,6 +182,19 @@ class SpuController extends Controller
      */
     public function actionStore($id)
     {
+        $query = SkuItemStores::find()->alias('b')->innerJoin(Store::tableName().' a',
+            'b.store_id = a.id'
+        )->andWhere([
+            'b.item_id' => $id
+        ]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['id' => SORT_DESC]],
+            'pagination' =>['pageSize' => 20],
+        ]);
+        return $this->renderAjax('store', ['dataProvider' => $dataProvider]);
+
+        /*
         $query = Store::find()->alias('a')->innerJoin(SkuItemStores::tableName() .' as b',
             'b.store_id = a.id'
         )->andWhere([
@@ -193,22 +205,41 @@ class SpuController extends Controller
             'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
         ]);
         return $this->renderAjax('store', ['dataProvider' => $dataProvider]);
+        */
     }
     
     /**
      * 融资租凭 金融方案
      *
-     * @param $id
+     * @param $skuId
      *
      * @return string
      */
-    public function actionFinancialLease($id)
+    public function actionFinancialLease( $skuId)
     {
-        $query = SkuItemFinancialLease::find()->where(['item_id' => $id]);
+        $query = SkuFinancialLease::find()->where(['sku_id' => $skuId]);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
         ]);
-        return $this->renderAjax('lease', ['dataProvider' => $dataProvider]);
+        return $this->renderAjax('lease', ['dataProvider' => $dataProvider, 'skuId' => $skuId]);
+    }
+    
+    /**
+     * 删除金融方案
+     *
+     */
+    public function actionFinancialLeaseDelete()
+    {
+        $id = Yii::$app->request->post('id');
+        if(!$id) {
+            $this->returnJson('参数错误', 0);
+        }
+        $lease = SkuFinancialLease::findOne($id);
+        if ($lease->delete()) {
+            $this->returnJson('删除成功');
+        } else {
+            $this->returnJson('删除失败', 0);
+        }
     }
 }

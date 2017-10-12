@@ -9,6 +9,7 @@
 namespace backend\models\form;
 
 
+use common\models\SkuItem;
 use common\models\SkuItemFinancial;
 use common\models\SkuParameterAndValue;
 use common\models\SkuSku;
@@ -25,10 +26,6 @@ use yii\helpers\ArrayHelper;
  */
 class SpuItemForm extends SpuForm
 {
-    const SCENARIO_SAVE_BASE = 'save_base';
-    const SCENARIO_SAVE_INTRODUCE = 'save_introduce';
-
-
     /**
      * sku信息
      *
@@ -48,15 +45,19 @@ class SpuItemForm extends SpuForm
      */
     public $images;
     
+    /**
+     * 数据验证
+     * @return array
+     */
     public function rules()
     {
         return [
-            [['sku', 'deposit', 'item_financial'], 'required','on'=>[self::SCENARIO_SAVE_BASE]],
-            [['des'], 'required','on'=>[self::SCENARIO_SAVE_INTRODUCE]],
+            [['sku', 'deposit', 'item_financial'], 'required', 'on' => [self::SCENARIO_SAVE_BASE]],
+            [['sku', 'deposit'], 'required', 'on' => [self::SCENARIO_SAVE_LEASE]],
+            [['des'], 'required', 'on' => [self::SCENARIO_SAVE_INTRODUCE]],
             ['deposit', 'integer'],
-            ['sku', 'checkSku'],
-            ['item_financial', 'each', 'rule' => ['integer']],
-            ['images','each','rule' => ['string']]
+            ['item_financial', 'each', 'rule' => ['integer'], 'on' => [self::SCENARIO_SAVE_BASE]],
+            ['images', 'each', 'rule' => ['string'], 'on' => [self::SCENARIO_SAVE_INTRODUCE]]
         ];
     }
 
@@ -64,19 +65,9 @@ class SpuItemForm extends SpuForm
     {
         return [
             self::SCENARIO_SAVE_BASE => ['sku', 'deposit', 'item_financial'],
+            self::SCENARIO_SAVE_LEASE => ['sku','deposit'],
             self::SCENARIO_SAVE_INTRODUCE => ['name','subname','images','des']
         ];
-    }
-
-    public function beforeValidate()
-    {
-        switch ($this->getScenario()){
-            case self::SCENARIO_SAVE_INTRODUCE:
-                break;
-            default:
-                parent::beforeValidate();
-                break;
-        }
     }
 
 
@@ -95,28 +86,6 @@ class SpuItemForm extends SpuForm
     }
     
     /**
-     * 验证sku相关信息
-     *
-     * @param $attribute
-     */
-    public function checkSku($attribute)
-    {
-        if(!is_array($this->$attribute)) {
-            $this->addError($attribute, '参数格式错误');
-        }
-        foreach ($this->$attribute as $value) {
-            if (!isset($value['outer_color_label_id']) || !isset($value['outer_color_label_value']) ||
-                !isset($value['outer_color_value_id']) || !isset($value['outer_color_value_value'])) {
-                $this->addError($attribute, '外色参数错误');
-            }
-            if (!isset($value['inner_color_label_id']) || !isset($value['inner_color_label_value']) ||
-                !isset($value['inner_color_value_id']) || !isset($value['inner_color_value_value'])) {
-                $this->addError($attribute, '内色参数错误');
-            }
-        }
-    }
-    
-    /**
      * 信息保存
      *
      * @return array|bool
@@ -129,6 +98,9 @@ class SpuItemForm extends SpuForm
             case self::SCENARIO_SAVE_BASE:
                 $res = $this->saveBase();
                 break;
+            case self::SCENARIO_SAVE_LEASE:
+                $res = $this->saveLease();
+                break;
             case self::SCENARIO_SAVE_INTRODUCE:
                 $res = $this->saveIntroduce();
                 break;
@@ -137,13 +109,47 @@ class SpuItemForm extends SpuForm
         }
         return $res;
     }
-
+    
+    /**
+     * 普通车型
+     *
+     * @return bool
+     * @throws Exception
+     */
     public function saveBase()
     {
         $t = \Yii::$app->db->beginTransaction();
         try{
-            $this->save();
+            $skuItem = SkuItem::findOne($this->id);
+            $skuItem->setAttributes($this->attributes);
+            if (!$skuItem->save()) {
+                throw new Exception('保存失败');
+            }
             $this->saveFinancial();
+            $this->skuSave();
+            $t->commit();
+        } catch (Exception $e){
+            $t->rollBack();
+            throw $e;
+        }
+        return true;
+    }
+    
+    /**
+     * 融资租赁车型
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function saveLease()
+    {
+        $t = \Yii::$app->db->beginTransaction();
+        try{
+            $skuItem = SkuItem::findOne($this->id);
+            $skuItem->setAttributes($this->attributes);
+            if (!$skuItem->save()) {
+                throw new Exception('保存失败');
+            }
             $this->skuSave();
             $t->commit();
         } catch (Exception $e){
@@ -164,6 +170,9 @@ class SpuItemForm extends SpuForm
     public function saveFinancial()
     {
         $data = [];
+//        $skuItemFinancial = SkuItemFinancial::find()->where(['item_id' => $this->id])->all();
+//        $ids = ArrayHelper::getColumn($skuItemFinancial, 'financial_id');
+        SkuItemFinancial::deleteAll(['item_id' => $this->id]);
         foreach ($this->item_financial as $financial) {
             $data[] = [
                 $this->spu_id,
@@ -175,8 +184,8 @@ class SpuItemForm extends SpuForm
         }
         $rst = \Yii::$app->db->createCommand()->batchInsert(SkuItemFinancial::tableName(), [
             'spu_id', 'financial_id', 'item_id', 'partner_id', 'create_time'
-        ],$data)->execute();
-        if (!$rst) {
+        ],$data);
+        if (!$rst->execute()) {
             throw new Exception('添加失败！');
         }
         return true;
@@ -197,6 +206,7 @@ class SpuItemForm extends SpuForm
                 $sku->price = $val['price'];
                 $sku->name = $val['name'];
                 $sku->subname = $val['subname'];
+                $sku->deposit = $this->deposit;
                 $sku->save();
             } else {
                 $sku = new SkuSku();

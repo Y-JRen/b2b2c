@@ -10,6 +10,7 @@ use common\traits\Redis;
 use Yii;
 use yii\db\Expression;
 use yii\db\Query;
+use yii\helpers\ArrayHelper;
 
 /**
  * Class StoreLogic 门店相关的一些逻辑
@@ -260,5 +261,13 @@ class StoreLogic extends Instance
         }
 
         return $mixReturn;
+    }
+
+    public function getStoreByArea($area_code,$where=null)
+    {
+        $query = Store::find()->where(['or',"city_code = '{$area_code}'","area_code = '{$area_code}'"]);
+        $where && $query->andWhere($where);
+        $model = $query->all();
+        return ArrayHelper::map($model,'id','name');
     }
 }

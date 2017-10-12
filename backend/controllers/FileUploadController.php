@@ -12,8 +12,6 @@ namespace backend\controllers;
 use common\logic\OssLogic;
 use common\models\SkuItem;
 use common\models\SkuItemAttachment;
-use yii\helpers\ArrayHelper;
-use yii\web\Controller;
 use yii\web\UploadedFile;
 
 /**
@@ -22,7 +20,7 @@ use yii\web\UploadedFile;
  * Class FileUpload
  * @package backend\controllers
  */
-class FileUploadController extends Controller
+class FileUploadController extends BaseController
 {
     public $enableCsrfValidation = false;
     /**
@@ -30,12 +28,24 @@ class FileUploadController extends Controller
      */
     public function actionIndex()
     {
+        $this->returnJson($this->upload());
+    }
+    
+    /**
+     * 上传图片
+     *
+     * @return array|string
+     */
+    private function upload()
+    {
         $file = UploadedFile::getInstanceByName('pics');
-        $returnUrl = OssLogic::instance()->uploadImgToOss($file->tempName, 'wangdiao/goods/'.$file->name);
+        $ext = $file->getExtension();
+        $randName = md5($file->name) . "." . $ext;
+        $returnUrl = OssLogic::instance()->uploadImgToOss($file->tempName, 'wangdiao/goods/'.$randName);
         if (!$returnUrl) {
             return '';
         }
-        return $returnUrl;
+        return ['url' => $returnUrl, 'name' => $randName];
     }
     
     /**
@@ -46,16 +56,21 @@ class FileUploadController extends Controller
         $result = OssLogic::instance()->deleteOssFile($url);
         return $result;
     }
-
+    
+    /**
+     * spu图片上传
+     *
+     * @param $id
+     */
     public function actionItemImage($id)
     {
         $skuItem = SkuItem::findOne($id);
         if($skuItem){
-            $url = $this->actionIndex();
+            $url = $this->upload();
             if($url){
                 $model = new SkuItemAttachment();
                 $model->item_id = $id;
-                $model->url = $url;
+                $model->url = $url['url'];
                 $model->partner_id = $skuItem->partner_id;
                 $model->spu_id = $skuItem->spu_id;
                 $model->type = 'image';
@@ -63,13 +78,21 @@ class FileUploadController extends Controller
                 $model->status = 1;
                 if($model->save()){
                     //$images = SkuItemAttachment::find()->select('url')->where(['item_id'=>$id])->asArray()->all();
-                    return $url;
+                    $this->returnJson($this->upload());
                 }
             }
         }
-        return '';
+        $this->returnJson('上传失败', 0);
     }
-
+    
+    /**
+     * 删除图片
+     *
+     * @param $url
+     * @param $id
+     *
+     * @return string
+     */
     public function actionDelItemImage($url,$id)
     {
         $skuItem = SkuItem::findOne($id);

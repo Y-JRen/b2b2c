@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use Yii;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\filters\Cors;
 use yii\helpers\Json;
@@ -77,6 +78,12 @@ class BaseController extends Controller
             ],
 
             // 所有请求必须使用POST 请求
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    '*' => ['post'],
+                ],
+            ],
         ];
     }
 
@@ -199,7 +206,7 @@ class BaseController extends Controller
     {
         return [
             'pages' => $this->formatPages($intPage, $intPageSize, $intTotal),
-            'lists' => $array
+            'lists' => $array ? $array : null,
         ];
     }
 }
