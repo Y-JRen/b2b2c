@@ -83,7 +83,10 @@ _HTML;
             $data['create_person'] = 'test';
             $lease = new SkuFinancialLease();
             if ($lease->load(['SkuFinancialLease' => $data]) && $lease->save()) {
-                $del = Html::a('删除', ['/spu/financial-lease-delete', 'id' => $data->id]);
+                $del = Html::a('删除', 'javascript:void(0)', [
+                    'class' => 'lease_delete',
+                    'title' => $lease->id
+                ]);
                 $html = <<<_HTML
 <td>{$lease->down_payment}</td>
 <td>{$lease->month_period}</td>

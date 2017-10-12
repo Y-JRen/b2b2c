@@ -180,7 +180,7 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
 <?php $store_url = \yii\helpers\Url::to(['store', 'id' => $model->id]);?>
 <?php
 $script = <<<_SCRIPT
-    $('.nav-tabs li a[href="'+localStorage.getItem('SELECT_TAB')+'"]').tab('show')
+    $('.nav-tabs li a[href="'+localStorage.getItem('SELECT_TAB_{$model->id}')+'"]').tab('show')
     
     $(".nav-tabs li a").click(function(){
         if($(this).attr('href') == '#store') {
@@ -188,10 +188,10 @@ $script = <<<_SCRIPT
                 $('#store').html(html)
             },'html');
         }
-        localStorage.setItem('SELECT_TAB', $(this).attr('href') );
+        localStorage.setItem('SELECT_TAB_{$model->id}', $(this).attr('href') );
     });
     
-    if(localStorage.getItem('SELECT_TAB') == '#store') {
+    if(localStorage.getItem('SELECT_TAB_{$model->id}') == '#store') {
         $.get('{$store_url}',function(html){
             $('#store').html(html)
         },'html');

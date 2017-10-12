@@ -7,8 +7,10 @@
  */
 
 use yii\helpers\Html;
+use yii\widgets\Pjax;
 ?>
 <div>
+    <?php Pjax::begin()?>
     <div class="box-header with-border">
         <?= Html::a('添加方案', 'javascript:void(0)', ['class' => 'btn btn-default lease_add']) ?>
     </div>
@@ -16,7 +18,6 @@ use yii\helpers\Html;
         
         <?= \common\widgets\GridView::widget([
             'dataProvider' => $dataProvider,
-            'layout' => "{items}\n{summary}\n{pager}",
             'columns' => [
                 [
                     'label' => '首付金额（元)',
@@ -72,6 +73,7 @@ use yii\helpers\Html;
             ],
         ]); ?>
     </div>
+    <?php Pjax::end();?>
 </div>
 
 <?php
@@ -87,7 +89,7 @@ $script = <<<_SCRIPT
             $('#lease_add tbody').append('{$html}');
         }
     });
-    $("body").delegate('.lease_save', "click",function(){
+    $("body").undelegate('.lease_save').delegate('.lease_save', "click",function(){
         var parent = $(this).parent().parent();
         var down_payment = parent.find('input[name="down_payment"]').val();
         var month_period = parent.find('input[name="month_period"]').val();
@@ -128,7 +130,7 @@ $script = <<<_SCRIPT
         }
         return true;
     }
-    $('.lease_delete').click(function(){
+    $("body").undelegate('.lease_delete').delegate('.lease_delete', "click",function(){
         id = $(this).attr('title');
         var parent = $(this).parent().parent()
         $.post('financial-lease-delete',{id:id},function(data){
