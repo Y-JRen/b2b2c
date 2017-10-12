@@ -20,22 +20,40 @@ $this->params['breadcrumbs'][] = $this->title;
                 ['class' => 'yii\grid\SerialColumn'],
                 [
                     'label' => '门店名称',
-                    'value' => 'name'
-                ],
-                [
-                    'label' => '所在地区',
                     'value' => function($model){
-                        return $model->province_name. ' '. $model->city_name. ' '.$model->area_name;
+                        return $model->store->name;
                     }
                 ],
-                'address',
-                'contact_person',
-                'contact_phone',
+                [
+                    'label' => '门店地址',
+                    'value' => function($model){
+                        return $model->store->address;
+                    }
+                ],
+                [
+                    'label' => '联系人',
+                    'value' => function($model){
+                        return $model->store->contact_person;
+                    }
+                ],
+                [
+                    'label' => '联系电话',
+                    'value' => function($model){
+                        return $model->store->contact_phone;
+                    }
+                ],
                 [
                     'label' => '操作',
                     'format' => 'raw',
                     'value' => function($data) {
-                        $html = Html::a('取消选择', ['update', 'id' => $data->id]);
+                        $html = Html::a('取消选择', 'javascript:void(0);',['onclick'=>'
+                        $.post("'.yii::$app->urlManager->createUrl('store/delete-spu-item-store').'",{id:'.$data->id.'},function(data){
+                            if(data.errCode == 0){
+                                loadStore();
+                            }else{
+                                alert(data.errMsg);
+                            }
+                        });']);
                         return $html;
                     },
                 ],

@@ -5,6 +5,7 @@ namespace backend\controllers;
 use backend\models\form\SpuItemForm;
 use common\logic\SkuLogic;
 use common\models\SkuFinancialLease;
+use common\models\SkuItem;
 use common\models\SkuItemAttachment;
 use common\models\SkuItemStores;
 use common\models\Store;
@@ -182,6 +183,18 @@ class SpuController extends Controller
      */
     public function actionStore($id)
     {
+        $query = SkuItemStores::find()->alias('b')->innerJoin(Store::tableName().' a',
+            'b.store_id = a.id'
+        )->andWhere([
+            'b.item_id' => $id
+        ]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
+        ]);
+        return $this->renderAjax('store', ['dataProvider' => $dataProvider]);
+
+        /*
         $query = Store::find()->alias('a')->innerJoin(SkuItemStores::tableName() .' as b',
             'b.store_id = a.id'
         )->andWhere([
@@ -192,6 +205,7 @@ class SpuController extends Controller
             'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
         ]);
         return $this->renderAjax('store', ['dataProvider' => $dataProvider]);
+        */
     }
     
     /**

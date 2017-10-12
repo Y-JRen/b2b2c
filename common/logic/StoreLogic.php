@@ -263,9 +263,11 @@ class StoreLogic extends Instance
         return $mixReturn;
     }
 
-    public function getStoreByArea($area_code)
+    public function getStoreByArea($area_code,$where=null)
     {
-        $model = Store::find()->where(['or',"city_code = '{$area_code}'","area_code = '{$area_code}'"])->all();
+        $query = Store::find()->where(['or',"city_code = '{$area_code}'","area_code = '{$area_code}'"]);
+        $where && $query->andWhere($where);
+        $model = $query->all();
         return ArrayHelper::map($model,'id','name');
     }
 }

@@ -241,6 +241,11 @@ class StoreController extends Controller
         return $this->asJson($this->arrJson);
     }
 
+    /**
+     * todo 可选门店条件（partner_id，foreign_service）
+     *
+     * @param $area_code
+     */
     public function actionGetStoreByArea($area_code)
     {
         $model = StoreLogic::instance()->getStoreByArea($area_code);
