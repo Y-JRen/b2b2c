@@ -145,27 +145,31 @@ var vue = new Vue({
     },
     methods: {
         handleRemove(file, fileList) {
-            if(file.response){
-                $.get('{$this->deleteUrl}&url='+file.response)
-            } else {
-                $.get('{$this->deleteUrl}&url='+file.url)
-            }
-            
-            this.count--
-            var html = '';
-            console.log(fileList)
-            for(var key in  fileList){
-                html += '<input type="hidden" name="{$name}['+key+']" value="'+ fileList[key].url +'">';
-            }
-            $('#{$hiddenId}').html(html)
+            $.get('{$this->deleteUrl}&url='+file.url,function(data){
+                this.count--
+                var html = '';
+                for(var key in  fileList){
+                    if({$this->multiple}){
+                        html += '<input type="hidden" name="{$name}['+key+']" value="'+ fileList[key].url +'">';
+                    } else {
+                        html += '<input type="hidden" name="{$name}" value="'+fileList[key].url+'">';
+                    }
+                }
+                $('#{$hiddenId}').html(html)
+            })
         },
         handleSuccess(response, file, fileList) {
             this.count++
+            file.name = response.data.name
+            file.url = response.data.url
             var html = '';
-            console.log(fileList.length)
             for(var key in  fileList){
-                console.log(fileList)
-                html += '<input type="hidden" name="{$name}" value="'+fileList[key].response+'">';
+                if({$this->multiple}){
+                    html += '<input type="hidden" name="{$name}['+key+']"" value="'+fileList[key].url+'">';
+                } else {
+                    html += '<input type="hidden" name="{$name}" value="'+fileList[key].url+'">';
+                }
+                
             }
             $('#{$hiddenId}').html(html)
         },

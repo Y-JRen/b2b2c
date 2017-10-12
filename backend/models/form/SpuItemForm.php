@@ -170,6 +170,9 @@ class SpuItemForm extends SpuForm
     public function saveFinancial()
     {
         $data = [];
+//        $skuItemFinancial = SkuItemFinancial::find()->where(['item_id' => $this->id])->all();
+//        $ids = ArrayHelper::getColumn($skuItemFinancial, 'financial_id');
+        SkuItemFinancial::deleteAll(['item_id' => $this->id]);
         foreach ($this->item_financial as $financial) {
             $data[] = [
                 $this->spu_id,
