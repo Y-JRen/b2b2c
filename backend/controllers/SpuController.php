@@ -182,6 +182,18 @@ class SpuController extends BaseController
      */
     public function actionStore($id)
     {
+        $query = SkuItemStores::find()->alias('b')->innerJoin(Store::tableName().' a',
+            'b.store_id = a.id'
+        )->andWhere([
+            'b.item_id' => $id
+        ]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
+        ]);
+        return $this->renderAjax('store', ['dataProvider' => $dataProvider]);
+
+        /*
         $query = Store::find()->alias('a')->innerJoin(SkuItemStores::tableName() .' as b',
             'b.store_id = a.id'
         )->andWhere([
@@ -192,6 +204,7 @@ class SpuController extends BaseController
             'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
         ]);
         return $this->renderAjax('store', ['dataProvider' => $dataProvider]);
+        */
     }
     
     /**

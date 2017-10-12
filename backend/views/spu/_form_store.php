@@ -45,9 +45,18 @@ Html::activeDropDownList(
 Html::button('添加', [
     'class' => 'btn btn-success btn-flat',
     'onclick' => '
-        $.post("'.yii::$app->urlManager->createUrl('store/update-store').'",{id:'.$model->id.',store_id:$("select#store-id").val()},function(){
-            loadStore();
-        });'
+        if($("select#store-id").val() <= 0){
+            alert("没有选择门店");
+            return;
+        }else{
+            $.post("'.yii::$app->urlManager->createUrl('store/update-store').'",{id:'.$model->id.',store_id:$("select#store-id").val()},function(data){
+                if(data.errCode == 0){
+                    loadStore();
+                }else{
+                    alert(data.errMsg);
+                }
+            });
+        }'
 ])
 ?>
 

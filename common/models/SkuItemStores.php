@@ -50,4 +50,9 @@ class SkuItemStores extends \yii\db\ActiveRecord
             'create_time' => 'Create Time',
         ];
     }
+
+    public function getStore()
+    {
+        return $this->hasOne(Store::className(),['id'=>'store_id']);
+    }
 }
