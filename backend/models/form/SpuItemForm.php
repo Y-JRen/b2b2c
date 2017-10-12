@@ -53,6 +53,7 @@ class SpuItemForm extends SpuForm
     {
         return [
             [['sku', 'deposit', 'item_financial'], 'required', 'on' => [self::SCENARIO_SAVE_BASE]],
+            [['sku', 'deposit'], 'required', 'on' => [self::SCENARIO_SAVE_LEASE]],
             [['des'], 'required', 'on' => [self::SCENARIO_SAVE_INTRODUCE]],
             ['deposit', 'integer'],
             ['item_financial', 'each', 'rule' => ['integer'], 'on' => [self::SCENARIO_SAVE_BASE]],
@@ -64,6 +65,7 @@ class SpuItemForm extends SpuForm
     {
         return [
             self::SCENARIO_SAVE_BASE => ['sku', 'deposit', 'item_financial'],
+            self::SCENARIO_SAVE_LEASE => ['sku','deposit'],
             self::SCENARIO_SAVE_INTRODUCE => ['name','subname','images','des']
         ];
     }
@@ -96,6 +98,9 @@ class SpuItemForm extends SpuForm
             case self::SCENARIO_SAVE_BASE:
                 $res = $this->saveBase();
                 break;
+            case self::SCENARIO_SAVE_LEASE:
+                $res = $this->saveLease();
+                break;
             case self::SCENARIO_SAVE_INTRODUCE:
                 $res = $this->saveIntroduce();
                 break;
@@ -104,7 +109,13 @@ class SpuItemForm extends SpuForm
         }
         return $res;
     }
-
+    
+    /**
+     * 普通车型
+     *
+     * @return bool
+     * @throws Exception
+     */
     public function saveBase()
     {
         $t = \Yii::$app->db->beginTransaction();
@@ -112,9 +123,33 @@ class SpuItemForm extends SpuForm
             $skuItem = SkuItem::findOne($this->id);
             $skuItem->setAttributes($this->attributes);
             if (!$skuItem->save()) {
-                throw new Exception('aaa');
+                throw new Exception('保存失败');
             }
             $this->saveFinancial();
+            $this->skuSave();
+            $t->commit();
+        } catch (Exception $e){
+            $t->rollBack();
+            throw $e;
+        }
+        return true;
+    }
+    
+    /**
+     * 融资租赁车型
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function saveLease()
+    {
+        $t = \Yii::$app->db->beginTransaction();
+        try{
+            $skuItem = SkuItem::findOne($this->id);
+            $skuItem->setAttributes($this->attributes);
+            if (!$skuItem->save()) {
+                throw new Exception('保存失败');
+            }
             $this->skuSave();
             $t->commit();
         } catch (Exception $e){
@@ -146,8 +181,8 @@ class SpuItemForm extends SpuForm
         }
         $rst = \Yii::$app->db->createCommand()->batchInsert(SkuItemFinancial::tableName(), [
             'spu_id', 'financial_id', 'item_id', 'partner_id', 'create_time'
-        ],$data)->execute();
-        if (!$rst) {
+        ],$data);
+        if (!$rst->execute()) {
             throw new Exception('添加失败！');
         }
         return true;

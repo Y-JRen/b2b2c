@@ -127,7 +127,7 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
                                         <?php foreach ($model->sku as $k => $sku):?>
                                             <tr>
                                                 <?php $param = \common\logic\SpuLogic::instance()->getParameter($sku['id']);?>
-                                                <input type="hidden" name="SpuItemForm[sku][<?=$k?>][id]" value="<?=$sku['id']?>">
+                                                <input type="hidden" class="sku_id" name="SpuItemForm[sku][<?=$k?>][id]" value="<?=$sku['id']?>">
                                                 <td><?=$param['外色']?></td>
                                                 <td><?=$param['内色']?></td>
                                                 <td><input class="form-control" name="SpuItemForm[sku][<?=$k?>][price]" value="<?=$sku['price']?>"></td>
@@ -145,14 +145,6 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
                             </div>
                         </div>
                     </div>
-
-                    <?= $form->field($model, 'item_financial')->widget(
-                            \kartik\select2\Select2::className(),
-                            [
-                                'options' => ['multiple' => true, 'placeholder' => '请选择'],
-                                'data' => \common\logic\FinancialLogic::instance()->getPartnerFinancial(1)
-                            ]
-                    )->label('金融方案') ?>
 
                     <?= $form->field($model, 'deposit')->textInput()->label('定金(元)') ?>
                     
@@ -176,19 +168,28 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
         </div>
     </div>
 </div>
-
 <?php
 $store_url = \yii\helpers\Url::to(['store', 'id' => $model->id]);
-$add_lease_url = \yii\helpers\Url::to(['financial-lease', 'skuId' => $model->id]);
+$add_lease_url = \yii\helpers\Url::to(['financial-lease']);
 $script = <<<_SCRIPT
 
+    $('.nav-tabs li a[href="'+localStorage.getItem('SELECT_TAB')+'"]').tab('show')
+    
     $(".nav-tabs li a").click(function(){
         if($(this).attr('href') == '#store') {
             $.get('{$store_url}',function(html){
                 $('#store').html(html)
             },'html');
         }
+        localStorage.setItem('SELECT_TAB', $(this).attr('href') );
     });
+    
+    if(localStorage.getItem('SELECT_TAB') == '#store') {
+        $.get('{$store_url}',function(html){
+            $('#store').html(html)
+        },'html');
+    }
+    
     function changeValue(current, next, url) {
         
         if(current == "spuform-brand_id"){
@@ -269,7 +270,7 @@ $script = <<<_SCRIPT
     });
     
     $("body").delegate('.add_lease', "click",function(){
-        $.get('{$add_lease_url}', function(html){
+        $.get('{$add_lease_url}?skuId='+$(this).parent().parent().find('.sku_id').val(), function(html){
             layer.open({
               title: '编辑金融方案',
               type: 1,

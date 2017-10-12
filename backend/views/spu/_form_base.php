@@ -168,22 +168,38 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
         </div>
 
         <div class="tab-pane active" id="store">
- 
+            <?=$this->render('_form_store', [
+                'model' => $model,
+            ]);?>
+            <div id="store_list">
+
+            </div>
         </div>
     </div>
 </div>
-
+<?php $store_url = \yii\helpers\Url::to(['store', 'id' => $model->id]);?>
+<script type="text/javascript">
+    function loadStore(){
+        $.get('<?=$store_url;?>',function(html){
+            $('#store_list').html(html)
+        },'html');
+    }
+</script>
 <?php
-$store_url = \yii\helpers\Url::to(['store', 'id' => $model->id]);
 $script = <<<_SCRIPT
 
     $(".nav-tabs li a").click(function(){
         if($(this).attr('href') == '#store') {
-            $.get('{$store_url}',function(html){
-                $('#store').html(html)
-            },'html');
+            loadStore();
         }
     });
+
+    function loadStore(){
+        $.get('{$store_url}',function(html){
+            $('#store_list').html(html)
+        },'html');
+    }
+
     function changeValue(current, next, url) {
         
         if(current == "spuform-brand_id"){
