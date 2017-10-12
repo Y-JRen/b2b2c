@@ -33,7 +33,130 @@ var financial = {
 				}
 
 
-			}
+			} 
+	var info   = JSON.parse( res ); 
+	var totalData = {
+		header: info.periodsList.header,
+		data: info.periodsList.data
+	}
+	var $shouInputs = $('.shou').find('input[type="checkbox"]');
+	var $years = $('.year').find('input[type="checkbox"]');
+
+	var header = [];
+	var renderData = [];
+	// 表头被选中的数组
+	var headerAry = [];
+	// 首付被选中的数组
+	var tbodyAry = [];
+	var table = new Table();
+
+	// 初始化表格
+	init();
+	$years.click(function(event) {
+	/* Act on the event */
+	header = [];
+	// 添加了哪个表头，首付就选哪个数据添加到数组中
+	headerAry = [];
+	$years.each(function(index) {
+	var checked = $(this).prop('checked');
+	if (checked) {
+	header.push(totalData.header[index])
+	headerAry.push(index);
+	}
+	})
+	renderData = [];
+	$shouInputs.each(function(i, el) {
+	var checked = $(this).prop('checked');
+	if (checked) {
+	var d = [];
+	headerAry.forEach(function(el) {
+
+	d.push(totalData.data[i][el]);
+
+	});
+	renderData.push(d)
+	}
+	});
+	// 是否有首付被选中的，有的话就render table
+	var shouCheckedLen = $('.shou').find('input[type="checkbox"]:checked').length;
+	if (shouCheckedLen) {
+	initTable(header, renderData);
+	}
+
+	});
+
+
+	$shouInputs.click(function(event) {
+	/* Act on the event */
+	renderData = [];
+	$shouInputs.each(function(i, el) {
+	var checked = $(this).prop('checked');
+	if (checked) {
+	var d = [];
+	headerAry.forEach(function(el) {
+
+	d.push(totalData.data[i][el]);
+
+	});
+	renderData.push(d)
+	}
+	});
+	initTable(header, renderData);
+
+	});
+
+	var initTable = function(header, renderData) {
+	// console.log('renderData', renderData);
+	table.init({
+	id:'table',
+	header:header,
+	data:renderData
+	});
+	}
+
+	$('#table').delegate('input.editor-table-input', 'blur', function(e) {
+	console.log(e);
+	})
+
+	// 最后 保存数据用的
+	$('#btn').click(function(event) {
+	/* Act on the event */
+	console.log(table.saveForm('table'))
+	});
+
+
+	function init() {
+	var initHeader = [];
+	var initTbodyData = [];
+	var initHeaderAry = [];
+	$years.each(function(index) {
+	var checked = $(this).prop('checked');
+	if (checked) {
+	initHeader.push(totalData.header[index])
+	initHeaderAry.push(index);
+	}
+	})
+
+	$shouInputs.each(function(i, el) {
+	var checked = $(this).prop('checked');
+	if (checked) {
+	var d = [];
+	initHeaderAry.forEach(function(el) {
+
+	d.push(totalData.data[i][el]);
+
+	});
+	initTbodyData.push(d)
+	}
+	});
+
+	table.init({
+	id:'table',
+	header: initHeader,
+	data: initTbodyData
+	})
+	}
+ 		 
 		}); 
         
     },

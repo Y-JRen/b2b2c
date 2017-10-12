@@ -110,26 +110,27 @@ class FinancialController extends Controller
 		$info['finType'] 		= $this->finType;
 
         //获取所有的金融方案期数
-         $periodsList    = FinancialBaseRepamentPeriod::find()->where([ '=', 'status', '1'  ]);
-        $info['periodsList']['header'][] = ['首付\周期'];
+        $periodsList    = FinancialBaseRepamentPeriod::find()->where([ '=', 'status', '1'  ]);
+        $info['periodsList']['header'][0] = '首付\周期';
         if($periodsList !==  null ){
             foreach($periodsList->asArray()->all() as $key=>$value){
-                $info['periodsList']['header'][] = $value['name'];
+                $info['periodsList']['header'][ $value['id'] ] = $value['name'];
             }
         }
         //获取所有的金融方案比例
         $proportionList = FinancialBaseDownPaymentRatio::find()->where([ '=', 'status', '1' ]);
 
         $info['periodsList']['data'][] = [];
-        if( $proportionList !==  null ){
-            foreach ( $info['periodsList']['header'] as $head ) {
-                foreach($proportionList->asArray()->all() as $k=>$v){
-                    $info['periodsList']['header'][] = $v['name'];
-                }
+        if( $proportionList !==  null ){ 	
+			foreach($proportionList->asArray()->all() as $k=>$v){ 
+				$info['periodsList']['data'][$k][0] =  $v['name'].'(月利率%)'; 
+				foreach ( $info['periodsList']['header'] as $qs=>$head ) { 
+					if($qs>0){
+						$info['periodsList']['data'][$k][$qs] = 0; 
+					}
+				} 
             }
-
-        }
-
+        }  
         if ($model = FinancialProgram::findOne($id)) {
             $info['title']   = '编辑金融方案';
             $info['id']      = $model->id;
@@ -141,10 +142,13 @@ class FinancialController extends Controller
             $ProgramInfo = FinancialProgramInfo::find()->where( [ '=', 'financial_id', $id  ] );
             if($ProgramInfo !==  null ){
                 $info['ProgramInfo'] = $ProgramInfo->asArray()->all();
+				foreach ( $info['ProgramInfo'] as $key=>$val){
+					$info['periodsList']['data'][$val['ratio_id']][$val['period_id']] = $val['rate'];
+				}
             }
         } else {
             $info['title']   = '添加金融方案';
-        } 
+        }  
         return  json_encode($info);
 
     }
