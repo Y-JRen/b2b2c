@@ -26,7 +26,7 @@ trait Redis
         $key = self::$prefix.':'.$key;
         $mixReturn = Yii::$app->redis->get($key);
         if ($mixReturn) {
-            $mixReturn = yii\helpers\Json::decode($mixReturn);
+            $mixReturn = \yii\helpers\Json::decode($mixReturn);
         }
 
         return $mixReturn;
@@ -42,7 +42,7 @@ trait Redis
     public function setCache($key, $value)
     {
         $key = self::$prefix.':'.$key;
-        return Yii::$app->redis->set($key, yii\helpers\Json::encode($value));
+        return Yii::$app->redis->set($key, \yii\helpers\Json::encode($value));
     }
 
     /**
@@ -55,7 +55,7 @@ trait Redis
     public function setCacheTime($key, $value, $time)
     {
         $key = self::$prefix.':'.$key;
-        return Yii::$app->redis->setex($key, yii\helpers\Json::encode($value), $time);
+        return Yii::$app->redis->setex($key, \yii\helpers\Json::encode($value), $time);
     }
 
     /**

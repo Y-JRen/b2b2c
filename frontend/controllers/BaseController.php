@@ -6,10 +6,10 @@ use Yii;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\filters\Cors;
-use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
 use common\logic\UcenterLogic;
 use common\traits\Redis;
+use common\traits\Json;
 
 
 /**
@@ -32,7 +32,7 @@ class BaseController extends Controller
     /**
      * 使用json 返回数据功能
      */
-    use \common\traits\Json;
+    use Json;
 
     /**
      * @var bool 关闭csrf 验证
@@ -105,10 +105,10 @@ class BaseController extends Controller
     private function initInputParam()
     {
         $request = Yii::$app->request;
-        $strPublic = $request->post('publicParam');
-        $strPrivate = $request->post('privateParam');
-        $this->publicParam = array_merge($this->publicParam, (array)Json::decode($strPublic));
-        $this->privateParam = (array)Json::decode($strPrivate);
+        $arrPublic = $request->post('publicParam');
+        $arrPrivate = $request->post('privateParam');
+        $this->publicParam = array_merge($this->publicParam, (array)$arrPublic);
+        $this->privateParam = (array)$arrPrivate;
     }
 
     /**
