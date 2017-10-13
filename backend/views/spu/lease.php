@@ -10,7 +10,7 @@ use yii\helpers\Html;
 use yii\widgets\Pjax;
 ?>
 <div>
-    <?php Pjax::begin()?>
+    <?php Pjax::begin(['enablePushState' => false])?>
     <div class="box-header with-border">
         <?= Html::a('添加方案', 'javascript:void(0)', ['class' => 'btn btn-default lease_add']) ?>
     </div>
