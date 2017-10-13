@@ -42,7 +42,9 @@ class FinancialLogic extends Instance
         }
 
         // 获取金融信息
-        $array = FinancialProgram::find()->where([
+        $array = FinancialProgram::find()->select([
+            'id', 'no', 'type', 'name', 'des'
+        ])->where([
             'id' => $ids,
             'status' => 1,
             'is_delete' => 0,
@@ -51,9 +53,12 @@ class FinancialLogic extends Instance
         if ($array) {
             foreach ($array as &$value) {
                 $value['id'] = (int)$value['id'];
+                $value['type'] = (int)$value['type'];
             }
 
             unset($value);
+        } else {
+            $array = null;
         }
 
         return $array;

@@ -59,13 +59,13 @@ class ListController extends BaseController
     public function actionSeries()
     {
         // 品牌ID
-        $intBrandId = (int)ArrayHelper::getValue($this->privateParam, 'car_brand_id');
+        $strBrandId = ArrayHelper::getValue($this->privateParam, 'car_brand_id');
         // 默认车系
-        if ($intBrandId === 0) {
+        if ($strBrandId == 0) {
             $array = [];
         // 指定品牌车系
         } else {
-            $array = CarLogic::instance()->getSeriesByBrandId($intBrandId);
+            $array = CarLogic::instance()->getSeriesByBrandId($strBrandId);
         }
 
         // 处理返回类型

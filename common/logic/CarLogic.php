@@ -327,18 +327,37 @@ class CarLogic extends Instance
     /**
      * 获取spu 的车型配置信息
      *
-     * @param $intSpuId
+     * @param integer $intSpuId spu id
+     * @param bool $isFormat 是否可是化输出数据
      * @return array|mixed|null|\yii\db\ActiveRecord
      */
-    public function getCarInfoBySpuId($intSpuId)
+    public function getCarInfoBySpuId($intSpuId, $isFormat = false)
     {
         $key = 'sku_spu_car:spu_id:'.$intSpuId;
         $mixReturn = $this->getCache($key);
         if (!$mixReturn) {
             $mixReturn = SkuSpuCar::find()->with('brandSonTypeInfo')->where(['spu_id' => $intSpuId])->asArray()->one();
-            if ($mixReturn) $this->setCache($key, $mixReturn);
+            if ($mixReturn) {
+                $this->setCache($key, $mixReturn);
+            }
         }
 
-        return  $mixReturn;
+        // 格式化输出
+        if ($mixReturn && $isFormat) {
+            $mixReturn = [
+                'brand_id' => (int)$mixReturn['brand_id'],
+                'brand_name' => $mixReturn['brand_name'],
+                'factory_id' => (int)$mixReturn['factory_id'],
+                'factory_name' => $mixReturn['factory_name'],
+                'series_id' => (int)$mixReturn['series_id'],
+                'series_name' => $mixReturn['series_name'],
+                'car_type_id' => (int)$mixReturn['car_type_id'],
+                'car_type_name' => $mixReturn['car_type_name'],
+                'factory_price' => (string)ArrayHelper::getValue($mixReturn, 'brandSonTypeInfo.factory_price', ''),
+                'bottom_price' => (string)ArrayHelper::getValue($mixReturn, 'brandSonTypeInfo.bottom_price', ''),
+            ];
+        }
+
+        return  $mixReturn ? $mixReturn : null;
     }
 }
