@@ -5,6 +5,7 @@ namespace backend\controllers;
 use backend\models\form\SpuItemForm;
 use common\logic\SkuLogic;
 use common\models\SkuFinancialLease;
+use common\models\SkuItem;
 use common\models\SkuItemStores;
 use common\models\Store;
 use Yii;
@@ -242,4 +243,28 @@ class SpuController extends BaseController
             $this->returnJson('删除失败', 0);
         }
     }
+    
+    /**
+     * 上下架
+     *
+     * @param $id
+     *
+     * @return \yii\web\Response
+     */
+    public function actionUpdateStatus($id)
+    {
+        $item = SkuItem::findOne($id);
+        if($item->status == 1){
+            $item->status = 0;
+        } else {
+            $item->status =  1;
+        }
+        if ($item->save()) {
+            Yii::$app->session->setFlash('success', '下架成功');
+        } else {
+            Yii::$app->session->setFlash('error', '下架失败');
+        }
+        return $this->redirect(['index', 'id' => $id]);
+    }
+    
 }

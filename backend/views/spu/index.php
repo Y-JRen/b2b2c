@@ -35,8 +35,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     'label' => '操作',
                     'format' => 'raw',
                     'value' => function($data) {
-                        $html = Html::a('编辑', ['update', 'id' => $data->id]);
-                        $html .= Html::a('上架', ['update', 'id' => $data->id], ['style' => 'padding:0 5px;']);
+                        $html = Html::a($data->status ? '下架' : '上架', ['update-status', 'id' => $data->id], ['style' => 'padding:0 5px;']);
+                        if ($data->status == 0) {
+                            $html .= Html::a('编辑', ['update', 'id' => $data->id]);
+                        }
                         return $html;
                     },
                 ],
