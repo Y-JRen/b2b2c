@@ -74,7 +74,7 @@ class SkuLogic extends Instance
         }
         $sku = new SkuSku();
         $guidePrice = CarBrandSonTypeInfo::findOne($spu->car_id)->factory_price * 10000;
-        $sku->price = $data['price'] ?? $guidePrice;
+        $sku->price = isset($data['price']) ? $data['price'] : $guidePrice;
         $sku->spu_id = $spu->spu_id;
         $sku->name = isset($data['name']) ? $data['name'] : $spu->name;
         $sku->subname = isset($data['subname']) ? $data['subname'] : '';
