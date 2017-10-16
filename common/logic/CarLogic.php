@@ -62,19 +62,40 @@ class CarLogic extends Instance
     {
         return ArrayHelper::map($this->getAllBrand(), 'car_brand_id', 'car_brand_name');
     }
-    
+
     /**
      * 所有品牌
      *
+     * @param array $select 需要的字段信息
      * @return array|CarBrandInfo[]|mixed|\yii\db\ActiveRecord[]
      */
-    public function getAllBrand()
+    public function getAllBrand($select = [])
     {
         $key = 'car_brand_info:all';
         $mixReturn = $this->getCache($key);
         if (!$mixReturn) {
             $mixReturn = CarBrandInfo::find()->asArray()->all();
             if ($mixReturn) $this->setCache($key, $mixReturn);
+        }
+
+        // 处理需要的字段信息
+        if ($mixReturn && $select) {
+            $array = [];
+            foreach ($mixReturn as $value) {
+                // 默认存在
+                $tmp = [
+                    'car_brand_id' => (int)$value['car_brand_id'],
+                    'car_brand_name' => $value['car_brand_name'],
+                ];
+
+                foreach ($select as $val) {
+                    $tmp[$val] = $value[$val];
+                }
+
+                $array[] = $tmp;
+            }
+
+            return $array;
         }
 
         return $mixReturn;

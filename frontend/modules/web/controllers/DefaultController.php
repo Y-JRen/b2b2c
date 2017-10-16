@@ -2,6 +2,8 @@
 
 namespace frontend\modules\web\controllers;
 
+use common\helpers\Helper;
+use common\models\PartnerApplyJoinLog;
 use frontend\controllers\BaseController;
 
 /**
@@ -40,6 +42,15 @@ class DefaultController extends BaseController
      */
     public function actionJoin()
     {
+        $logs = new PartnerApplyJoinLog();
+        $logs->load($this->privateParam, '');
+        if ($logs->save()) {
+            $this->handleJson($this->privateParam);
+        } else {
+            $this->arrJson['errCode'] = 4001;
+            $this->arrJson['errMsg'] = Helper::arrayToString($logs->getErrors());
+        }
+
         return $this->returnJson();
     }
 }

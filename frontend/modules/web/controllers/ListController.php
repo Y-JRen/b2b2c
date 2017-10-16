@@ -28,20 +28,7 @@ class ListController extends BaseController
         $defaultBrands = [];
 
         // 第二步、全部的品牌信息
-        $array = CarLogic::instance()->getAllBrand();
-
-        // 处理返回类型
-        if ($array) {
-            $arrReturn = [];
-            foreach ($array as $value) {
-                $arrReturn[] = [
-                    'car_brand_id' => (int)$value['car_brand_id'],
-                    'car_brand_name' => $value['car_brand_name'],
-                ];
-            }
-
-            $array = $arrReturn;
-        }
+        $array = CarLogic::instance()->getAllBrand(['pic_url', 'first_num']);
 
         // 第三步、获取默认车系信息
         $defaultSeries = [];
