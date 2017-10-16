@@ -38,32 +38,27 @@ class PartnerController extends BaseController
     }
 
     /**
-     * 获取厂商的品牌信息
+     * 获取厂商的品牌信息\厂商的价格区间(搜索参数)
      *
      * @return mixed|string
      */
-    public function actionBrands()
+    public function actionSearchParams()
     {
         // 验证请求参数(厂商ID不能为空)
         if (!empty($this->privateParam['partner_id'])) {
-            $array = PartnerLogic::instance()->getPartnerBrands((int)$this->privateParam['partner_id']);
-            $this->handleJson($array);
+            $object = PartnerLogic::instance();
+            $brands = $object->getPartnerBrands((int)$this->privateParam['partner_id']);
+            $priceInterVal = $object->getPriceInterVal();
+
+            // 返回数据信息
+            $this->handleJson([
+                'brands' => $brands,
+                'priceInterVal' => $priceInterVal
+            ]);
         } else {
             $this->arrJson['errCode'] = 1004;
         }
 
-        return $this->returnJson();
-    }
-
-    /**
-     * 获取厂商的价格区间
-     *
-     * @return mixed|string
-     */
-    public function actionPriceInterval()
-    {
-        $array = PartnerLogic::instance()->getPriceInterVal();
-        $this->handleJson($array);
         return $this->returnJson();
     }
 
