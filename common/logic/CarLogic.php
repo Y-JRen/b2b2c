@@ -68,15 +68,16 @@ class CarLogic extends Instance
      *
      * @return array|CarBrandInfo[]|mixed|\yii\db\ActiveRecord[]
      */
-    protected function getAllBrand()
+    public function getAllBrand()
     {
-        $cache = \Yii::$app->cache;
-        if($brand = $cache->get("ALL_CAR_BRAND")) {
-            return $brand;
+        $key = 'car_brand_info:all';
+        $mixReturn = $this->getCache($key);
+        if (!$mixReturn) {
+            $mixReturn = CarBrandInfo::find()->asArray()->all();
+            if ($mixReturn) $this->setCache($key, $mixReturn);
         }
-        $brand = CarBrandInfo::find()->all();
-        $cache->set("ALL_CAR_BRAND", $brand);
-        return $brand;
+
+        return $mixReturn;
     }
     
     /**

@@ -18,36 +18,43 @@ use yii\helpers\ArrayHelper;
 class ListController extends BaseController
 {
     /**
-     * 品牌信息
+     * 搜索信息[品牌信息、默认品牌、车系信息、默认车系信息、首付金额]
      *
      * @return mixed|string
      */
-    public function actionBrands()
+    public function actionSearchParams()
     {
-        // 类型
-        $intType = (int)ArrayHelper::getValue($this->privateParam, 'type');
+        // 第一步获取默认的品牌信息
+        $defaultBrands = [];
 
-        // 默认品牌
-        if ($intType === 0) {
-            $array = [];
-        // 全部品牌
-        } else {
-            $array = CarBrandInfo::find()->select(['car_brand_id', 'car_brand_name'])
-                ->where(['is_used' => CarBrandInfo::IS_USED_YES])
-                ->asArray()
-                ->all();
-        }
+        // 第二步、全部的品牌信息
+        $array = CarLogic::instance()->getAllBrand();
 
         // 处理返回类型
         if ($array) {
-            foreach ($array as &$value) {
-                $value['car_brand_id'] = (int)$value['car_brand_id'];
+            $arrReturn = [];
+            foreach ($array as $value) {
+                $arrReturn[] = [
+                    'car_brand_id' => (int)$value['car_brand_id'],
+                    'car_brand_name' => $value['car_brand_name'],
+                ];
             }
 
-            unset($value);
+            $array = $arrReturn;
         }
 
-        $this->handleJson($array);
+        // 第三步、获取默认车系信息
+        $defaultSeries = [];
+
+        // 第三步、获取首付区间
+        $downPayments = Yii::$app->params['arrDownPayment'];
+
+        $this->handleJson([
+            'defaultBrands' => $defaultBrands,
+            'brands' => $array,
+            'defaultSeries' => $defaultSeries,
+            'downPayments' => $downPayments,
+        ]);
         return $this->returnJson();
     }
 
@@ -61,13 +68,7 @@ class ListController extends BaseController
         // 品牌ID
         $strBrandId = ArrayHelper::getValue($this->privateParam, 'car_brand_id');
         // 默认车系
-        if ($strBrandId == 0) {
-            $array = [];
-        // 指定品牌车系
-        } else {
-            $array = CarLogic::instance()->getSeriesByBrandId($strBrandId);
-        }
-
+        $array = CarLogic::instance()->getSeriesByBrandId($strBrandId);
         // 处理返回类型
         if ($array) {
             $arrReturn = [];
@@ -82,17 +83,7 @@ class ListController extends BaseController
         }
 
         $this->handleJson($array);
-        return $this->returnJson();
-    }
 
-    /**
-     * 首付金额
-     *
-     * @return mixed|string
-     */
-    public function actionDownPayment()
-    {
-        $this->handleJson(Yii::$app->params['arrDownPayment']);
         return $this->returnJson();
     }
 
