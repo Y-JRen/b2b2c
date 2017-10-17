@@ -50,13 +50,22 @@ $this->params['breadcrumbs'][] = $this->title;
                     'format' => 'raw',
                     'value' => function($data) {
                         $html = Html::a('取消选择', 'javascript:void(0);',['onclick'=>'
-                        $.post("'.yii::$app->urlManager->createUrl('store/delete-spu-item-store').'",{id:'.$data->id.'},function(data){
-                            if(data.errCode == 0){
-                                loadStore();
-                            }else{
-                                alert(data.errMsg);
-                            }
-                        });']);
+
+                        layer.confirm("确定取消吗？", {
+                            btn: ["是","否"] //按钮
+                        }, function(){
+                            $.post("'.yii::$app->urlManager->createUrl('store/delete-spu-item-store').'",{id:'.$data->id.'},function(data){
+                                if(data.errCode == 0){
+                                    layer.msg("取消成功");
+                                    loadStore();
+                                }else{
+                                    layer.msg(data.errMsg);
+                                }
+                            });
+                        }, function(){
+
+                        });
+                        ']);
                         return $html;
                     },
                 ],

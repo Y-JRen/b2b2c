@@ -198,9 +198,7 @@ $script = <<<_SCRIPT
     });
     
     if(localStorage.getItem('SELECT_TAB_{$model->id}') == '#store') {
-        $.get('{$store_url}',function(html){
-            $('#store').html(html)
-        },'html');
+        loadStore();
     }
 
     function changeValue(current, next, url) {

@@ -164,12 +164,25 @@ $guidePrice = \common\models\CarBrandSonTypeInfo::findOne($model->car_id)->facto
         </div>
 
         <div class="tab-pane active" id="store">
+            <?=$this->render('_form_store', [
+                'model' => $model,
+            ]);?>
+            <div id="store_list">
 
+            </div>
         </div>
     </div>
 </div>
+<?php $store_url = \yii\helpers\Url::to(['store', 'id' => $model->id]);?>
+<script type="text/javascript">
+    function loadStore()
+    {
+        $.get('<?=$store_url;?>',function(html){
+            $('#store_list').html(html)
+        },'html');
+    }
+</script>
 <?php
-$store_url = \yii\helpers\Url::to(['store', 'id' => $model->id]);
 $add_lease_url = \yii\helpers\Url::to(['financial-lease']);
 $script = <<<_SCRIPT
 
@@ -177,17 +190,13 @@ $script = <<<_SCRIPT
     
     $(".nav-tabs li a").click(function(){
         if($(this).attr('href') == '#store') {
-            $.get('{$store_url}',function(html){
-                $('#store').html(html)
-            },'html');
+            loadStore();
         }
         localStorage.setItem('SELECT_TAB', $(this).attr('href') );
     });
     
     if(localStorage.getItem('SELECT_TAB') == '#store') {
-        $.get('{$store_url}',function(html){
-            $('#store').html(html)
-        },'html');
+        loadStore();
     }
     
     function changeValue(current, next, url) {
